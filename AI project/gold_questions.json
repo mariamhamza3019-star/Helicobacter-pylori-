@@ -1,0 +1,168 @@
+{
+  "_note": "Gold set for retrieval evaluation. 'expect_sections' lists the sections that SHOULD contain the answer. A question passes if any retrieved chunk in the top-k belongs to one of them. VERIFY these against the PDF before trusting the numbers -- they were written from the guideline's structure and abstract, not from a page-by-page read.",
+  "_sections": [
+    "ABSTRACT",
+    "INTRODUCTION",
+    "METHODS",
+    "EPIDEMIOLOGY",
+    "INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT",
+    "ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS",
+    "POST-TREATMENT TESTING FOR CURE",
+    "ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS",
+    "ANTIBIOTIC SUSCEPTIBILITY TESTING",
+    "PROBIOTICS AND HELICOBACTER PYLORI THERAPY",
+    "FUTURE RESEARCH PRIORITIES"
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "q": "What is the preferred first-line regimen for treatment-naive patients when antibiotic susceptibility is unknown?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "ABSTRACT"]
+    },
+    {
+      "id": "Q02",
+      "q": "How many days should bismuth quadruple therapy be given for?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "ABSTRACT"]
+    },
+    {
+      "id": "Q03",
+      "q": "What empiric alternative is suitable for patients without penicillin allergy?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "ABSTRACT"]
+    },
+    {
+      "id": "Q04",
+      "q": "What is potassium-competitive acid blocker dual therapy?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "INTRODUCTION"]
+    },
+    {
+      "id": "Q05",
+      "q": "Why is clarithromycin triple therapy no longer recommended as empiric first-line treatment?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "ANTIBIOTIC SUSCEPTIBILITY TESTING"]
+    },
+    {
+      "id": "Q06",
+      "q": "Which regimen is preferred for treatment-experienced patients who have not previously received optimized bismuth quadruple therapy?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS", "ABSTRACT"]
+    },
+    {
+      "id": "Q07",
+      "q": "What is rifabutin triple therapy and when is it used?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS", "ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "ABSTRACT"]
+    },
+    {
+      "id": "Q08",
+      "q": "When may a salvage regimen containing clarithromycin or levofloxacin be used?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS", "ABSTRACT"]
+    },
+    {
+      "id": "Q09",
+      "q": "What does optimized bismuth quadruple therapy mean in terms of dosing?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS", "ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS"]
+    },
+    {
+      "id": "Q10",
+      "q": "How should a patient who has failed two courses of eradication therapy be managed?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS"]
+    },
+    {
+      "id": "Q11",
+      "q": "Should all patients treated for H. pylori undergo testing to confirm eradication?",
+      "expect_sections": ["POST-TREATMENT TESTING FOR CURE", "ABSTRACT"]
+    },
+    {
+      "id": "Q12",
+      "q": "How long after completing therapy should test of cure be performed?",
+      "expect_sections": ["POST-TREATMENT TESTING FOR CURE"]
+    },
+    {
+      "id": "Q13",
+      "q": "Which tests are appropriate for confirming H. pylori eradication after treatment?",
+      "expect_sections": ["POST-TREATMENT TESTING FOR CURE"]
+    },
+    {
+      "id": "Q14",
+      "q": "Which patients should be tested for H. pylori infection?",
+      "expect_sections": ["INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT", "ABSTRACT"]
+    },
+    {
+      "id": "Q15",
+      "q": "Should patients with active or prior peptic ulcer disease be tested for H. pylori?",
+      "expect_sections": ["INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT"]
+    },
+    {
+      "id": "Q16",
+      "q": "Is H. pylori testing indicated before starting long-term low-dose aspirin or NSAID therapy?",
+      "expect_sections": ["INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT"]
+    },
+    {
+      "id": "Q17",
+      "q": "Should patients with unexplained iron deficiency anemia be tested for H. pylori?",
+      "expect_sections": ["INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT"]
+    },
+    {
+      "id": "Q18",
+      "q": "Should first-degree relatives of patients with gastric cancer be tested?",
+      "expect_sections": ["INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT"]
+    },
+    {
+      "id": "Q19",
+      "q": "Does eradicating H. pylori reduce the risk of gastric cancer?",
+      "expect_sections": ["INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT", "EPIDEMIOLOGY"]
+    },
+    {
+      "id": "Q20",
+      "q": "What is the prevalence of H. pylori infection in North America?",
+      "expect_sections": ["EPIDEMIOLOGY", "INTRODUCTION"]
+    },
+    {
+      "id": "Q21",
+      "q": "Which population groups in the United States have a higher burden of H. pylori infection?",
+      "expect_sections": ["EPIDEMIOLOGY"]
+    },
+    {
+      "id": "Q22",
+      "q": "What is the role of antibiotic susceptibility testing in selecting H. pylori therapy?",
+      "expect_sections": ["ANTIBIOTIC SUSCEPTIBILITY TESTING", "ABSTRACT"]
+    },
+    {
+      "id": "Q23",
+      "q": "What molecular methods are available for H. pylori antibiotic susceptibility testing?",
+      "expect_sections": ["ANTIBIOTIC SUSCEPTIBILITY TESTING", "INTRODUCTION"]
+    },
+    {
+      "id": "Q24",
+      "q": "Do probiotics improve H. pylori eradication rates?",
+      "expect_sections": ["PROBIOTICS AND HELICOBACTER PYLORI THERAPY"]
+    },
+    {
+      "id": "Q25",
+      "q": "Are probiotics recommended as an adjunct to eradication therapy?",
+      "expect_sections": ["PROBIOTICS AND HELICOBACTER PYLORI THERAPY"]
+    },
+    {
+      "id": "Q26",
+      "q": "What methodology was used to develop and grade the recommendations?",
+      "expect_sections": ["METHODS", "ABSTRACT"]
+    },
+    {
+      "id": "Q27",
+      "q": "How many PICO questions and key concepts does the guideline contain?",
+      "expect_sections": ["METHODS", "ABSTRACT"]
+    },
+    {
+      "id": "Q28",
+      "q": "What are the criteria for a strong versus conditional recommendation?",
+      "expect_sections": ["METHODS"]
+    },
+    {
+      "id": "Q29",
+      "q": "What knowledge gaps and research priorities did the guideline identify?",
+      "expect_sections": ["FUTURE RESEARCH PRIORITIES"]
+    },
+    {
+      "id": "Q30",
+      "q": "How should H. pylori be managed in patients with a penicillin allergy?",
+      "expect_sections": ["ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS", "ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS", "ABSTRACT"]
+    }
+  ]
+}
