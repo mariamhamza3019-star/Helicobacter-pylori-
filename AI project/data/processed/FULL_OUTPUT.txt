@@ -1,0 +1,524 @@
+PDF: data/raw\acg_clinical_guideline__treatment_of_helicobacter.13.pdf
+PDF: data/raw\acg_clinical_guideline__treatment_of_helicobacter.13.pdf
+PAGES: 24
+TOTAL LINES: 2792
+BODY FONT SIZE (most chars): 9.5
+
+=== FONT SIZE HISTOGRAM (size -> chars, lines) ===
+  size  20.9  chars      65  lines     2
+  size  11.0  chars      19  lines     1
+  size  10.0  chars    5048  lines    57
+  size   9.5  chars   87045  lines  1635  <-- BODY
+  size   9.0  chars    1852  lines    48
+  size   8.5  chars    5302  lines   107
+  size   8.0  chars   27350  lines   558
+  size   7.5  chars   11566  lines   250
+  size   7.2  chars     110  lines     1
+  size   7.0  chars    6181  lines    49
+  size   6.6  chars    4056  lines    48
+  size   6.2  chars    1104  lines    36
+
+=== FONTS IN USE ===
+  AdvOT1ef757c0                            2203
+  AdvTT6dfc8da3                            331
+  AdvOTa018106b.B                          54
+  AdvPSOP-B                                48
+  Helvetica                                48
+  AdvTT1a7102ed                            39
+  AdvTT3d29b194.B                          24
+  AdvTT7c285990                            24
+  AdvOT08549422.BI                         18
+  AdvOT7d6df7ab.I                          3
+
+=== HEADING CANDIDATES (size > body, or bold, or ALL CAPS) ===
+    p    size  B  x0     text
+    1   11.0      52.2   CLINICAL GUIDELINES
+    1   20.9      52.5   ACG Clinical Guideline: Treatment of Helicobacter
+    1   20.9      52.5   pylori Infection
+    1    9.0      52.5   ABSTRACT
+    1   10.0     123.3   Helicobacter pylori is a prevalent, global infectious disease that causes dyspepsia, pepti
+    1   10.0     123.3   and gastric cancer. The American College of Gastroenterology commissioned this clinical pr
+    1   10.0     123.3   guideline (CPG) to inform the evidence-based management of patients with H. pylori infecti
+    1   10.0     123.3   America. This CPG used Grading of Recommendations, Assessment, Development, and Evaluation
+    1   10.0     123.3   (GRADE) methodology to systematically analyze 11 Population, Intervention, Comparison, and
+    1   10.0     123.3   Outcome questions and generate recommendations. Where evidence was insufficient or the top
+    1   10.0     123.3   not lend itself to GRADE, expert consensus was used to create 6 key concepts. For treatmen
+    1   10.0     123.3   patients with H. pylori infection, bismuth quadruple therapy (BQT) for 14 days is the pref
+    1   10.0     123.3   when antibiotic susceptibility is unknown. Rifabutin triple therapy or potassium-competiti
+    1   10.0     123.3   treatment-experienced patients with persistent H. pylori infection, “optimized” BQT for 14
+    1   10.0     123.3   preferred for those who have not been treated with optimized BQT previously and for whom a
+    1   10.0     123.3   susceptibility is unknown. In patients previously treated with optimized BQT, rifabutin tr
+    1   10.0     123.3   14 days is a suitable empiric alternative. Salvage regimens containing clarithromycin or l
+    1    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+    1   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    2   10.0     113.1   need for universal post-treatment test-of-cure, and the current evidence regarding antibio
+    2   10.0     113.1   susceptibility testing and its role in guiding the choice of initial and salvage treatment
+    2   10.0     113.1   concludes with a discussion of proposed research priorities to address knowledge gaps and 
+    2   10.0     113.1   future management recommendations in patients with H. pylori infection from North America.
+    2   10.0      42.3   INTRODUCTION
+    2    9.5     495.4   PCABs)
+    2   10.0     300.4   METHODS
+    2    9.5     300.4   EMBASE,
+    2    9.5     347.8   MEDLINE,
+    2   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    3   10.0     310.6   EPIDEMIOLOGY
+    3    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+    3   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    4    9.5     501.8   H.
+    4   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    5   10.0      52.5   INDICATIONS FOR HELICOBACTER PYLORI TESTING
+    5   10.0      52.5   AND TREATMENT
+    5    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+    5   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    6   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    7    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+    7   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    8   10.0      42.3   ERADICATING HELICOBACTER PYLORI INFECTION IN
+    8   10.0      42.3   TREATMENT-NAIVE PATIENTS
+    8    7.5     368.3   FDA
+    8   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+    9    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+    9   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   10   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   11    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   11   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   12    9.5     523.7   PPI-
+   12    9.5     300.4   (84.5%,653/773)(RR1.05,95%CI1.01–1.09,P50.02,
+   12    9.5     300.4   I25 0%).
+   12   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   13   10.0      52.5   POST-TREATMENT TESTING FOR CURE
+   13   10.0     310.6   ERADICATING HELICOBACTER PYLORI INFECTION IN
+   13   10.0     310.6   TREATMENT-EXPERIENCED PATIENTS
+   13    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   13   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   14    7.5     389.8   AST
+   14   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   15    9.5     542.1   CI
+   15    9.5     310.6   [PP]) (112).
+   15    9.5     284.3   CI
+   15    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   15   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   16   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   17    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   17   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   18    9.5      81.3   RCT
+   18   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   19   10.0     310.6   ANTIBIOTIC SUSCEPTIBILITY TESTING
+   19    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   19   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   20   10.0     300.4   PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+   20   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   21    8.5     310.6   CONFLICTS OF INTEREST
+   21   10.0     310.6   REFERENCES
+   21   10.0      52.5   FUTURE RESEARCH PRIORITIES
+   21    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   21   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   22   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   23    6.2     397.1   VOLUME 119|SEPTEMBER 2024
+   23   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+   24   10.0      51.9   Copyright© 2024 by The American College of Gastroenterology. Unauthorized reproduction of 
+
+=== FIRST 3 LINES OF EACH PAGE (check reading order / column mixing) ===
+  p1:
+      CLINICAL GUIDELINES
+      1730
+      ACG Clinical Guideline: Treatment of Helicobacter
+  p2:
+      Treatment of Helicobacter pylori Infection
+      1731
+      should only be used if antibiotic susceptibility is confirmed. The CPG also addresses who to test, t
+  p3:
+      Chey et al
+      1732
+      Table 1.GRADE criteria
+  p4:
+      Treatment of Helicobacter pylori Infection
+      1733
+      Table 2.Guideline recommendations
+  p5:
+      Chey et al
+      1734
+      Table 3.Summary of key concepts
+  p6:
+      Treatment of Helicobacter pylori Infection
+      1735
+      Table 4.Indications for H. pylori testing and treatment
+  p7:
+      Chey et al
+      1736
+      H. pylori infection in Japanese populations underscores the role of
+  p8:
+      Treatment of Helicobacter pylori Infection
+      1737
+      Recommendation
+  p9:
+      Chey et al
+      1738
+      Figure 1. Empiric first-line regimens for treatment-naive patients with H. pylori infection (no anti
+  p10:
+      Treatment of Helicobacter pylori Infection
+      1739
+      Figure 2. (a) Meta-analysis of antibiotic susceptibility testing performed on 2,669 H. pylori strain
+  p11:
+      Chey et al
+      1740
+      rabeprazole or esomeprazole was used (85). We do not advocate
+  p12:
+      Treatment of Helicobacter pylori Infection
+      1741
+      Recommendation
+  p13:
+      Chey et al
+      1742
+      POST-TREATMENT TESTING FOR CURE
+  p14:
+      Treatment of Helicobacter pylori Infection
+      1743
+      Table 6.Recommended salvage regimens for treatment-experienced patients with persistent H. pylori in
+  p15:
+      Chey et al
+      1744
+      Figure 3. Empiric salvage regimens for treatment-experienced patients with persistent H. pylori infe
+  p16:
+      Treatment of Helicobacter pylori Infection
+      1745
+      Figure 4. Antibiotic susceptibility testing guided salvage regimens for treatment-experienced patien
+  p17:
+      Chey et al
+      1746
+      concentration.Assumingthatintragastricrifabutinconcentra-
+  p18:
+      Treatment of Helicobacter pylori Infection
+      1747
+      Recommendation
+  p19:
+      Chey et al
+      1748
+      BQT consisting ofbismuth citrate 107 mg, metronidazole 500 mg,
+  p20:
+      Treatment of Helicobacter pylori Infection
+      1749
+      signiﬁcant (132). All the above studies were conducted outside of
+  p21:
+      Chey et al
+      1750
+      rates. The beneﬁts of probiotics seemed to be most profound in
+  p22:
+      Treatment of Helicobacter pylori Infection
+      1751
+      Downloaded from http://journals.lww.com/ajg by BhDMf5ePHKav1zEoum1tQfN4a+kJLhEZgbsIHo4XMi0hCywCX1AWn
+  p23:
+      Chey et al
+      1752
+      Downloaded from http://journals.lww.com/ajg by BhDMf5ePHKav1zEoum1tQfN4a+kJLhEZgbsIHo4XMi0hCywCX1AWn
+  p24:
+      Treatment of Helicobacter pylori Infection
+      1753
+      Downloaded from http://journals.lww.com/ajg by BhDMf5ePHKav1zEoum1tQfN4a+kJLhEZgbsIHo4XMi0hCywCX1AWn
+
+
+Saved to data/processed/inspect.txt  <-- paste this back
+ 
+========================================================== 
+ STEP 2 - PARSE + CLEAN + CHUNK 
+========================================================== 
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+PDF: data/raw\acg_clinical_guideline__treatment_of_helicobacter.13.pdf
+Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+============================================================
+ACG — PARSE / CLEAN / SECTION / CHUNK
+============================================================
+Pages           : 24
+Body font size  : 9.5
+Token counting  : exact (bge-small-en-v1.5)
+Sections        : 31
+Chunks          : 103 (93 prose + 10 table)
+Chunk budget    : 400 tokens | overlap: 60
+Chunk tokens    : min=86 median=361 max=400
+
+--- SECTIONS DETECTED ---
+  DROP L9  p 1-1      271 ch   FRONT MATTER
+       L1  p 1-2     2900 ch   ABSTRACT
+       L1  p 2-2     4797 ch   INTRODUCTION
+       L1  p 2-3     3432 ch   METHODS
+       L2  p 3-5     6836 ch   EPIDEMIOLOGY  /  Key concept
+       L2  p 5-5     2471 ch   EPIDEMIOLOGY  /  Key concepts
+       L2  p 5-5      867 ch   INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT  /  Key concept
+       L2  p 5-6     5244 ch   INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT  /  Indications for H. pylori testing
+       L2  p 6-8    10162 ch   INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT  /  H. pylori testing and treatment f
+       L1  p 8-8      889 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS
+       L2  p 8-9     4900 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Recommendation
+       L2  p 9-10    2601 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Recommendation
+       L2  p10-11    7713 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Recommendation
+       L2  p11-11    2133 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Key concept
+       L2  p12-12    3753 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Recommendation
+       L2  p12-12    2076 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Recommendation
+       L2  p12-12     606 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS  /  Summary of recommenda
+       L2  p13-13    4599 ch   POST-TREATMENT TESTING FOR CURE  /  Key concept
+       L1  p13-13    1018 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS
+       L2  p13-16    7215 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Recommendation
+       L2  p16-16    2836 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Recommendation
+       L2  p16-17    5135 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Recommendation
+       L2  p17-17    2721 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Key concept
+       L2  p18-18     301 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Recommendation
+       L2  p18-18    5466 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Recommendation
+       L2  p18-19    5108 ch   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS  /  Recommendation 
+       L2  p19-20    8568 ch   ANTIBIOTIC SUSCEPTIBILITY TESTING  /  Key concept
+       L2  p20-21    2404 ch   PROBIOTICS AND HELICOBACTER PYLORI THERAPY  /  Recommendation
+       L1  p21-21    3534 ch   FUTURE RESEARCH PRIORITIES
+  DROP L1  p21-21     974 ch   CONFLICTS OF INTEREST
+  DROP L1  p21-24   27533 ch   REFERENCES
+
+  kept 28 sections, dropped 3
+
+--- TOP-LEVEL SECTIONS ---
+    3 chunks   ABSTRACT
+    3 chunks   INTRODUCTION
+    3 chunks   METHODS
+    8 chunks   EPIDEMIOLOGY
+   14 chunks   INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT
+   26 chunks   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS
+    3 chunks   POST-TREATMENT TESTING FOR CURE
+   33 chunks   ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS
+    6 chunks   ANTIBIOTIC SUSCEPTIBILITY TESTING
+    2 chunks   PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+    2 chunks   FUTURE RESEARCH PRIORITIES
+
+--- TABLES EXTRACTED ---
+  p 3  1 chunk(s)    8 rows   Table 1. GRADE criteria
+        filed under: EPIDEMIOLOGY
+  p 8  4 chunk(s)   31 rows   Table 5. Recommended regimens for treatment-naive patients with H. pylor
+        filed under: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS
+  p14  5 chunk(s)   35 rows   Table 6. Recommended salvage regimens for treatment-experienced patients
+        filed under: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PAT
+
+--- ALL TABLE CHUNKS (read these, they carry the doses) ---
+
+### ACG_T0094  part 1/1  p3
+Table 1. GRADE criteria
+|  | Strength of recommendation |  | Criteria |
+|---|---|---|---|
+| Factors influencing the strength of the recommendation include the quality of the evidence, clinical and patient-reported outcomes, risk of harm, and costs/ healthcare resource utilization. |  |  |  |
+| Strong |  |  | Strong recommendations are offered when the desirable effects of an intervention clearly outweigh the undesirable effects. Implications from a patient and clinician perspective: Patients: Most individuals in this situation would prefer the recommended course of action, and only a small proportion would choose an alternative. Clinicians: Most patients should receive the recommended course of action or an alternative with similar strength of recommendation. |
+| Conditional |  |  | Conditional recommendations are offered when trade-offs are less certain—either because of low quality evidence or because evidence suggests that desirable and undesirable effects are closely balanced. Implications from a patient and clinician perspective: Patients: Some individuals would want the suggest
+
+### ACG_T0095  part 1/4  p8
+Table 5. Recommended regimens for treatment-naive patients with H. pylori infection
+| Regimen |  | Dosing | FDA |  |
+|---|---|---|---|---|
+|  | Drugs (doses) | frequency | approval | Recommendation |
+| Optimized bismuth quadruplea | PPI (standard dose)b | b.i.d. | Noc | Strong (moderate quality of evidence) |
+|  | Bismuth subcitrate (120-300 mg) or subsalicylate (300 mg)d | q.i.d. |  |  |
+|  | Tetracycline (500 mg)e | q.i.d. |  |  |
+|  | Metronidazole (500 mg) | t.i.d. or q.i.d. |  |  |
+| Rifabutin triple (Talicia)f | Omeprazole (10 mg)b | 4 capsules t.i.d. | Yes | Conditional (low quality of evidence) |
+|  | Amoxicillin (250 mg) |  |  |  |
+|  | Rifabutin (12.5 mg) |  |  |  |
+| PCAB dual (Voquezna Dual Pak)g | Vonoprazan (20 mg) | b.i.d. | Yes | Conditional (moderate quality of evidence) |
+|  | Amoxicillin (1,000 mg) | t.i.d. |  |  |
+| PCAB triple (Voquezna Triple Pak)h | Vonoprazan (20 mg) | b.i.d. | Yes | Conditional (moderate quality of evidence) |
+|  | Clarithromycin (500 mg) |  |  |  |
+|  | Amoxicillin (1,000 mg) |  |  |  |
+
+### ACG_T0096  part 2/4  p8
+Table 5. Recommended regimens for treatment-naive patients with H. pylori infection
+| Regimen |  | Dosing | FDA |  |
+|---|---|---|---|---|
+| Recommended regimens for treatment-naive patients with H. pylori infection (All regimens are recommended for 14 days.). |  |  |  |  |
+| FDA, US Food and Drug Administration; PCAB, potassium-competitive acid blocker; PPI, proton pump inhibitor; b.i.d., twice daily; q.i.d., 4 times daily; t.i.d., 3 times daily. |  |  |  |  |
+| a |  |  |  |  |
+| Optimized bismuth quadruple therapy includes appropriately dosed PPI, bismuth, nitroimidazole (1,500-2,000 mg in divided doses), and tetracycline (not doxycycline). |  |  |  |  |
+| b |  |  |  |  |
+| PPIs should be dosed 30-60 minutes before a meal. |  |  |  |  |
+| c |  |  |  |  |
+
+### ACG_T0097  part 3/4  p8
+Table 5. Recommended regimens for treatment-naive patients with H. pylori infection
+| Regimen |  | Dosing | FDA |  |
+|---|---|---|---|---|
+| Bismuth quadruple therapy, when the components are prescribed individually, is not approved by the FDA. Two proprietary combination regimens (Pylera and Helidac) are FDA-approved. However, Pylera is only dispensed as a 10-day regimen. Helidac is dispensed as a 14-day regimen. These combination formulations should be administered with a PPI that is taken b.i.d. The original FDA approval for Helidac was with an H2-receptor antagonist (H2RA) and was restricted to patients with H. pylori infection and a duodenal ulcer. However, we do not recommend H2RAs as part of H. pylori treatment regimens. |  |  |  |  |
+| d |  |  |  |  |
+| Patients with a salicylate allergy should not be given bismuth subsalicylate. |  |  |  |  |
+| e |  |  |  |  |
+| Doxycycline is not a recommended substitution for tetracycline. |  |  |  |  |
+| f |  |  |  |  |
+
+### ACG_T0098  part 4/4  p8
+Table 5. Recommended regimens for treatment-naive patients with H. pylori infection
+| Regimen |  | Dosing | FDA |  |
+|---|---|---|---|---|
+| The proprietary preparation Talicia is currently the only rifabutin-containing regimen that is FDA-approved and the only one that has been evaluated as first-line treatment. Each capsule of Talicia contains omeprazole 10 mg, amoxicillin 250 mg, and rifabutin 12.5 mg. The approved dosing schedule is 4 capsules t.i.d. for 14 days. Therefore, the total daily doses of the individual components are omeprazole 120 mg (i.e., 40 mg t.i.d.), amoxicillin 3,000 mg (i.e., 1,000 mg t.i.d.), and rifabutin 150 mg (i.e., 50 mg t.i.d.). |  |  |  |  |
+| g |  |  |  |  |
+| This proprietary preparation is currently the only PCAB dual regimen that is FDA-approved for the treatment of H. pylori infection in adults and that is available in the United States. |  |  |  |  |
+| h |  |  |  |  |
+| This proprietary preparation is currently the only PCAB-clarithromycin triple regimen that is FDA-approved for the treatment of H. pylori infection in adults and that is available 
+
+### ACG_T0099  part 1/5  p14
+Table 6. Recommended salvage regimens for treatment-experienced patients with persistent H. pylori infection
+| Regimen |  |  | AST |  |
+|---|---|---|---|---|
+|  | Drugs (doses) | Dosing frequency | required? | Recommendation |
+| Optimized bismuth quadruplea | PPI (standard dose)b | b.i.d. | No | Conditional (very low quality of evidence) |
+|  | Bismuth subcitrate (120-300 mg) or subsalicylate (300 mg) | q.i.d. |  |  |
+|  | Tetracycline (500 mg) | q.i.d. |  |  |
+|  | Metronidazole (500 mg) | t.i.d. or q.i.d. |  |  |
+| Rifabutin triple | PPI (standard to double dose)b | b.i.d. | No | Conditional (low quality of evidence) |
+|  | Amoxicillin (1,000 mg) | b.i.d. or t.i.d. |  |  |
+|  | Rifabutin (50-300 mg)c | q.d., b.i.d., or (Talicia which contains 50 mg t.i.d.)c |  |  |
+| Levofloxacin tripled | PPI (standard dose)b | b.i.d. | Yes | Conditional (low quality of evidence) |
+|  | Levofloxacin (500 mg)d | q.d. |  |  |
+|  | Amoxicillin (1,000 mg) or metronidazolee (500 mg) | b.i.d. |  |  |
+
+### ACG_T0100  part 2/5  p14
+Table 6. Recommended salvage regimens for treatment-experienced patients with persistent H. pylori infection
+| Regimen |  |  | AST |  |
+|---|---|---|---|---|
+| P-CAB triple (Voquezna Triple Pak)f | Vonoprazan (20 mg) | b.i.d | Yes | No recommendation (evidence gap) |
+|  | Clarithromycin (500 mg) |  |  |  |
+|  | Amoxicillin (1,000 mg) |  |  |  |
+| High-dose dual therapyg | Vonoprazan (20 mg)h or PPI (double dose) | b.i.d. or t.i.d. | No | No recommendation (evidence gap) |
+|  | Amoxicillin (1,000 mg) | t.i.d |  |  |
+| Recommended regimens for treatment-experienced patients with persistent H. pylori infection (All regimens are recommended for 14 days.). |  |  |  |  |
+| AST, antibiotic sensitivity testing; FDA, US Food and Drug Administration; PCAB, potassium-competitive acid blocker; PPI, proton pump inhibitor; b.i.d., twice daily; q.d., once daily; q.i.d., 4 times daily; t.i.d., 3 times daily. |  |  |  |  |
+| There are no FDA-approved regimens for the treatment of persistent H. pylori infection. |  |  |  |  |
+| a |  |  |  |  |
+
+### ACG_T0101  part 3/5  p14
+Table 6. Recommended salvage regimens for treatment-experienced patients with persistent H. pylori infection
+| Regimen |  |  | AST |  |
+|---|---|---|---|---|
+| Optimized bismuth quadruple therapy includes appropriately dosed PPI, bismuth, nitroimidazole (1,500-2,000 mg in divided doses), and tetracycline. Patients with a salicylate allergy should not be given bismuth subsalicylate. Doxycycline is not a recommended substitution for tetracycline because of higher rates of failure. The proprietary combination regimen Pylera is acceptable but is only available as a 10-day regimen. Helidac dosed with a twice-daily PPI for 14 days is an appropriate selection. |  |  |  |  |
+| b |  |  |  |  |
+| PPIs should be dosed 30-60 minutes before a meal. |  |  |  |  |
+| c |  |  |  |  |
+| The optimal dosing strategy for rifabutin in rifabutin triple salvage therapy is unclear. Rifabutin 50 mg tablets are not commercially available. Although Talicia provides rifabutin as 50 mg t.i.d., it has not been evaluated as salvage therapy. If prescribing the drugs separately, we suggest rifabutin 150 mg b.i.d. or 
+
+### ACG_T0102  part 4/5  p14
+Table 6. Recommended salvage regimens for treatment-experienced patients with persistent H. pylori infection
+| Regimen |  |  | AST |  |
+|---|---|---|---|---|
+| e |  |  |  |  |
+| Metronidazole should be used in place of amoxicillin for levofloxacin triple therapy in patients with true penicillin allergy. |  |  |  |  |
+| f |  |  |  |  |
+| This proprietary preparation is currently FDA-approved for the treatment of H. pylori infection in adults but has not been evaluated as a salvage regimen. Therefore, a recommendation cannot be made for or against its use in treatment-experienced patients with persistent H. pylori infection. This regimen should not be used in individuals with previous macrolide exposure, nor should it be used in individuals without demonstrated clarithromycin-sensitive H. pylori strains. |  |  |  |  |
+| g |  |  |  |  |
+| High-dose dual therapy consists of high-potency gastric acid suppression therapy (i.e., high-dose PPI or PCAB) and high-dose amoxicillin. There is vast heterogeneity in the literature regarding the dose and choice of PPI. Although an attractive option 
+
+### ACG_T0103  part 5/5  p14
+Table 6. Recommended salvage regimens for treatment-experienced patients with persistent H. pylori infection
+| Regimen |  |  | AST |  |
+|---|---|---|---|---|
+| Voquezna Dual Pak, which contains vonoprazan 20 mg b.i.d. and amoxicillin 1,000 mg t.i.d., is a proprietary preparation that is FDA-approved for the treatment of H. pylori infection in adults, but it has not been evaluated as a salvage regimen. Therefore, a recommendation cannot be made for or against its use in treatment-experienced patients with persistent H. pylori infection. |  |  |  |  |
+
+--- TABLE CANDIDATES REJECTED (left in prose, nothing lost) ---
+  p 1  fewer than 2 substantive rows                 1730 CLINICAL GUIDELINES  
+
+--- FIRST TABLE CHUNK (verify the rows line up) ---
+Table 1. GRADE criteria
+|  | Strength of recommendation |  | Criteria |
+|---|---|---|---|
+| Factors influencing the strength of the recommendation include the quality of the evidence, clinical and patient-reported outcomes, risk of harm, and costs/ healthcare resource utilization. |  |  |  |
+| Strong |  |  | Strong recommendations are offered when the desirable effects of an intervention clearly outweigh the undesirable effects. Implications from a patient and clinician perspective: Patients: Most individuals in this situation would prefer the recommended course of action, and only a small proportion would choose an alternative. Clinicians: Most patients should receive the recommended course of action or an alternative with similar strength of recommendation. |
+| Conditional |  |  | Conditional recommendations are offered when trade-offs are less certain—either because of low quality evi
+
+Saved: data/processed/acg_chunks.json
+Saved: data/processed/acg_sections.json  <-- verify this before embedding
+
+--- FIRST CHUNK ---
+{
+  "chunk_id": "ACG_0001",
+  "document_id": "ACG_2024",
+  "text": "Helicobacter pylori is a prevalent, global infectious disease that causes dyspepsia, peptic ulcer disease, and gastric cancer. The American College of Gastroenterology commissioned this clinical practice guideline (CPG) to inform the evidence-based management of patients with H. pylori infection in North America. This CPG used Grading of Recommendations, Assessment, Development, and Evaluation (GRADE) methodology to systematically analyze 11 Population, Intervention, Comparison, and Outcome questions and generate recommendations. Where evidence was insufficient or the topic did not lend itself to GRADE, expert consensus was used to create 6 key concepts. For treatment-naive patients with H. pylori infection, bismuth quadruple therapy (BQT) for 14 days is the preferred regimen when antibiotic susceptibility is unknown. Rifabutin triple therapy or potassium-competitive acid blocker dual therapy for 14 days is a suitable empiric alternative in patients without penicillin allergy. In treatment-experienced patients with persistent H. pylori infection, \"optimized\" BQT for 14 days is preferred for those who have not been treated with optimized BQT previously and for whom antibiotic susceptibility is unknown. In patients previously treated with optimized BQT, rifabutin triple therapy for 14 days is a suitable empiric alternative.",
+  "section": "ABSTRACT",
+  "subsection": "",
+  "page_start": 1,
+  "page_end": 2,
+  "
+ 
+========================================================== 
+ STEP 3 - RETRIEVAL EVAL 
+========================================================== 
+==================================================================
+RETRIEVAL EVAL — BM25 lexical baseline (regression detector)
+==================================================================
+chunks indexed : 103
+questions      : 30
+
+  section recall@1  : 23/30  (76.7%)
+  section recall@3  : 30/30  (100.0%)
+  section recall@5  : 30/30  (100.0%)
+  section recall@10 : 30/30  (100.0%)
+  MRR             : 0.883
+
+--- PER QUESTION ---
+[PASS] Q01 rank=1  What is the preferred first-line regimen for treatment-naive patients when ant
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p12 | ACG_0052
+[PASS] Q02 rank=2  How many days should bismuth quadruple therapy be given for?
+         top1: EPIDEMIOLOGY | p3 | ACG_0012
+[PASS] Q03 rank=1  What empiric alternative is suitable for patients without penicillin allergy?
+         top1: ABSTRACT | p1 | ACG_0001
+[PASS] Q04 rank=1  What is potassium-competitive acid blocker dual therapy?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_T0096
+[PASS] Q05 rank=1  Why is clarithromycin triple therapy no longer recommended as empiric first-li
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_T0098
+[PASS] Q06 rank=2  Which regimen is preferred for treatment-experienced patients who have not pre
+         top1: EPIDEMIOLOGY | p3 | ACG_0011
+[PASS] Q07 rank=1  What is rifabutin triple therapy and when is it used?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p16 | ACG_0067
+[PASS] Q08 rank=1  When may a salvage regimen containing clarithromycin or levofloxacin be used?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p18 | ACG_0083
+[PASS] Q09 rank=2  What does optimized bismuth quadruple therapy mean in terms of dosing?
+         top1: EPIDEMIOLOGY | p3 | ACG_0011
+[PASS] Q10 rank=1  How should a patient who has failed two courses of eradication therapy be mana
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p13 | ACG_0056
+[PASS] Q11 rank=1  Should all patients treated for H. pylori undergo testing to confirm eradicati
+         top1: POST-TREATMENT TESTING FOR CURE | p13 | ACG_0053
+[PASS] Q12 rank=1  How long after completing therapy should test of cure be performed?
+         top1: POST-TREATMENT TESTING FOR CURE | p13 | ACG_0053
+[PASS] Q13 rank=1  Which tests are appropriate for confirming H. pylori eradication after treatme
+         top1: POST-TREATMENT TESTING FOR CURE | p13 | ACG_0053
+[PASS] Q14 rank=1  Which patients should be tested for H. pylori infection?
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p6 | ACG_0026
+[PASS] Q15 rank=1  Should patients with active or prior peptic ulcer disease be tested for H. pyl
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q16 rank=1  Is H. pylori testing indicated before starting long-term low-dose aspirin or N
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q17 rank=1  Should patients with unexplained iron deficiency anemia be tested for H. pylor
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q18 rank=1  Should first-degree relatives of patients with gastric cancer be tested?
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q19 rank=1  Does eradicating H. pylori reduce the risk of gastric cancer?
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p6 | ACG_0026
+[PASS] Q20 rank=2  What is the prevalence of H. pylori infection in North America?
+         top1: FUTURE RESEARCH PRIORITIES | p21 | ACG_0093
+[PASS] Q21 rank=2  Which population groups in the United States have a higher burden of H. pylori
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_0034
+[PASS] Q22 rank=1  What is the role of antibiotic susceptibility testing in selecting H. pylori t
+         top1: ANTIBIOTIC SUSCEPTIBILITY TESTING | p19 | ACG_0084
+[PASS] Q23 rank=1  What molecular methods are available for H. pylori antibiotic susceptibility t
+         top1: ANTIBIOTIC SUSCEPTIBILITY TESTING | p19 | ACG_0084
+[PASS] Q24 rank=1  Do probiotics improve H. pylori eradication rates?
+         top1: PROBIOTICS AND HELICOBACTER PYLORI THERAPY | p20 | ACG_0090
+[PASS] Q25 rank=1  Are probiotics recommended as an adjunct to eradication therapy?
+         top1: PROBIOTICS AND HELICOBACTER PYLORI THERAPY | p20 | ACG_0090
+[PASS] Q26 rank=2  What methodology was used to develop and grade the recommendations?
+         top1: INTRODUCTION | p2 | ACG_0005
+[PASS] Q27 rank=1  How many PICO questions and key concepts does the guideline contain?
+         top1: METHODS | p2 | ACG_0007
+[PASS] Q28 rank=2  What are the criteria for a strong versus conditional recommendation?
+         top1: EPIDEMIOLOGY | p3 | ACG_T0094
+[PASS] Q29 rank=1  What knowledge gaps and research priorities did the guideline identify?
+         top1: FUTURE RESEARCH PRIORITIES | p21 | ACG_0092
+[PASS] Q30 rank=1  How should H. pylori be managed in patients with a penicillin allergy?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_0031
+
+Reading this:
+  recall@5 below ~0.75 means chunks are landing in the wrong
+  section or the text is too mangled to match. Look at the FAILs
+  and open those chunks in acg_chunks.json.
+
+  This is BM25, not the shipping retriever. Treat it as a
+  before/after number when changing chunk size, overlap or
+  cleaning rules — not as a quality guarantee.
+
+Saved: data/processed/eval_report.txt
