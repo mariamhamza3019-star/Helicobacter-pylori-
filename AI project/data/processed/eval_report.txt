@@ -1,0 +1,82 @@
+==================================================================
+RETRIEVAL EVAL — BM25 lexical baseline (regression detector)
+==================================================================
+chunks indexed : 103
+questions      : 30
+
+  section recall@1  : 26/30  (86.7%)
+  section recall@3  : 30/30  (100.0%)
+  section recall@5  : 30/30  (100.0%)
+  section recall@10 : 30/30  (100.0%)
+  MRR             : 0.933
+
+--- PER QUESTION ---
+[PASS] Q01 rank=1  What is the preferred first-line regimen for treatment-naive patients when ant
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p12 | ACG_0052
+[PASS] Q02 rank=1  How many days should bismuth quadruple therapy be given for?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p10 | ACG_0041
+[PASS] Q03 rank=1  What empiric alternative is suitable for patients without penicillin allergy?
+         top1: ABSTRACT | p1 | ACG_0001
+[PASS] Q04 rank=2  What is potassium-competitive acid blocker dual therapy?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p3 | ACG_0012
+[PASS] Q05 rank=1  Why is clarithromycin triple therapy no longer recommended as empiric first-li
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_T0098
+[PASS] Q06 rank=1  Which regimen is preferred for treatment-experienced patients who have not pre
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p3 | ACG_0011
+[PASS] Q07 rank=1  What is rifabutin triple therapy and when is it used?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p16 | ACG_0067
+[PASS] Q08 rank=1  When may a salvage regimen containing clarithromycin or levofloxacin be used?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p18 | ACG_0083
+[PASS] Q09 rank=1  What does optimized bismuth quadruple therapy mean in terms of dosing?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p3 | ACG_0011
+[PASS] Q10 rank=1  How should a patient who has failed two courses of eradication therapy be mana
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPER | p13 | ACG_0056
+[PASS] Q11 rank=1  Should all patients treated for H. pylori undergo testing to confirm eradicati
+         top1: POST-TREATMENT TESTING FOR CURE | p13 | ACG_0053
+[PASS] Q12 rank=1  How long after completing therapy should test of cure be performed?
+         top1: POST-TREATMENT TESTING FOR CURE | p13 | ACG_0053
+[PASS] Q13 rank=1  Which tests are appropriate for confirming H. pylori eradication after treatme
+         top1: POST-TREATMENT TESTING FOR CURE | p13 | ACG_0053
+[PASS] Q14 rank=1  Which patients should be tested for H. pylori infection?
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p6 | ACG_0026
+[PASS] Q15 rank=1  Should patients with active or prior peptic ulcer disease be tested for H. pyl
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q16 rank=1  Is H. pylori testing indicated before starting long-term low-dose aspirin or N
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q17 rank=1  Should patients with unexplained iron deficiency anemia be tested for H. pylor
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q18 rank=1  Should first-degree relatives of patients with gastric cancer be tested?
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p5 | ACG_0021
+[PASS] Q19 rank=1  Does eradicating H. pylori reduce the risk of gastric cancer?
+         top1: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT | p6 | ACG_0026
+[PASS] Q20 rank=1  What is the prevalence of H. pylori infection in North America?
+         top1: EPIDEMIOLOGY | p3 | ACG_0009
+[PASS] Q21 rank=2  Which population groups in the United States have a higher burden of H. pylori
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_0034
+[PASS] Q22 rank=1  What is the role of antibiotic susceptibility testing in selecting H. pylori t
+         top1: ANTIBIOTIC SUSCEPTIBILITY TESTING | p19 | ACG_0084
+[PASS] Q23 rank=1  What molecular methods are available for H. pylori antibiotic susceptibility t
+         top1: ANTIBIOTIC SUSCEPTIBILITY TESTING | p19 | ACG_0084
+[PASS] Q24 rank=1  Do probiotics improve H. pylori eradication rates?
+         top1: PROBIOTICS AND HELICOBACTER PYLORI THERAPY | p20 | ACG_0090
+[PASS] Q25 rank=1  Are probiotics recommended as an adjunct to eradication therapy?
+         top1: PROBIOTICS AND HELICOBACTER PYLORI THERAPY | p20 | ACG_0090
+[PASS] Q26 rank=2  What methodology was used to develop and grade the recommendations?
+         top1: INTRODUCTION | p2 | ACG_0004
+[PASS] Q27 rank=1  How many PICO questions and key concepts does the guideline contain?
+         top1: METHODS | p2 | ACG_0006
+[PASS] Q28 rank=2  What are the criteria for a strong versus conditional recommendation?
+         top1: SUMMARY OF KEY CONCEPTS | p3 | ACG_T0094
+[PASS] Q29 rank=1  What knowledge gaps and research priorities did the guideline identify?
+         top1: FUTURE RESEARCH PRIORITIES | p21 | ACG_0092
+[PASS] Q30 rank=1  How should H. pylori be managed in patients with a penicillin allergy?
+         top1: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE | p8 | ACG_0031
+
+Reading this:
+  recall@5 below ~0.75 means chunks are landing in the wrong
+  section or the text is too mangled to match. Look at the FAILs
+  and open those chunks in acg_chunks.json.
+
+  This is BM25, not the shipping retriever. Treat it as a
+  before/after number when changing chunk size, overlap or
+  cleaning rules — not as a quality guarantee.
