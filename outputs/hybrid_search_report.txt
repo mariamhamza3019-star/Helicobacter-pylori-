@@ -1,0 +1,1235 @@
+========================================================================
+RETRIEVAL COMPARISON (30 gold questions)
+========================================================================
+Method                              R@1    R@3    R@5   R@10    MRR  ABST@1
+------------------------------------------------------------------------
+bm25 only                        86.7% 100.0% 100.0% 100.0% 0.933    3.3%
+minmax (70/30, old)              46.7% 76.7% 86.7% 90.0% 0.638   83.3%
+rrf + section downrank           50.0% 66.7% 80.0% 83.3% 0.601   56.7%
+rrf + downrank + MedCPT rerank   80.0% 100.0% 100.0% 100.0% 0.883    0.0%
+
+ABST@1 = % of queries where ABSTRACT is rank #1 (lower is better for evidence)
+
+========================================================================
+FULL GOLD SET — OLD vs NEW (top 10, side-by-side)
+========================================================================
+  OLD: minmax (70/30, old)
+  NEW: rrf + downrank + MedCPT rerank
+
+
+========================================================================
+Q01 — What is the preferred first-line regimen for treatment-naive patients when antibiotic susceptibility is unknown?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 3  ACG_0002  p1  ABSTRACT *
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0032  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 6  ACG_0005  p2  INTRODUCTION
+  # 7  ACG_0006  p2  METHODS
+  # 8  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 9  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  #10  ACG_0004  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 2  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 3  ACG_0047  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 4  ACG_0087  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 5  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 6  ACG_0032  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 7  ACG_0033  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 8  ACG_0086  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 9  ACG_T0098  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  #10  ACG_0036  p9  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+
+========================================================================
+Q02 — How many days should bismuth quadruple therapy be given for?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 3  ACG_0006  p2  METHODS
+  # 4  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 5  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 6  ACG_0002  p1  ABSTRACT *
+  # 7  ACG_0007  p2  METHODS
+  # 8  ACG_0003  p2  INTRODUCTION
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0041  p10  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0096  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 2  ACG_T0097  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 3  ACG_T0101  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien
+  # 4  ACG_0041  p10  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 5  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 6  ACG_0075  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation
+  # 7  ACG_0006  p2  METHODS
+  # 8  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 9  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  #10  ACG_0040  p10  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+
+========================================================================
+Q03 — What empiric alternative is suitable for patients without penicillin allergy?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0002  p1  ABSTRACT *
+  # 3  ACG_0031  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N *
+  # 4  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 5  ACG_0006  p2  METHODS
+  # 6  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 7  ACG_0007  p2  METHODS
+  # 8  ACG_0004  p2  INTRODUCTION
+  # 9  ACG_0003  p2  INTRODUCTION
+  #10  ACG_0005  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 2  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 3  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 4  ACG_T0102  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien
+  # 5  ACG_0031  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N *
+  # 6  ACG_0056  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+  # 7  ACG_0033  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 8  ACG_0082  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation experienced patients
+  # 9  ACG_0084  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  #10  ACG_0001  p1  ABSTRACT *
+
+========================================================================
+Q04 — What is potassium-competitive acid blocker dual therapy?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, INTRODUCTION
+OLD PASS rank=3  |  NEW PASS rank=3
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 3  ACG_0005  p2  INTRODUCTION *
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 6  ACG_0006  p2  METHODS
+  # 7  ACG_0003  p2  INTRODUCTION *
+  # 8  ACG_0007  p2  METHODS
+  # 9  ACG_0004  p2  INTRODUCTION *
+  #10  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 2  ACG_T0100  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien
+  # 3  ACG_T0096  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 4  ACG_0001  p1  ABSTRACT
+  # 5  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 6  ACG_0005  p2  INTRODUCTION *
+  # 7  ACG_0038  p10  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 8  ACG_0002  p1  ABSTRACT
+  # 9  ACG_0006  p2  METHODS
+  #10  ACG_0008  p2  METHODS
+
+========================================================================
+Q05 — Why is clarithromycin triple therapy no longer recommended as empiric first-line treatment?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, ANTIBIOTIC SUSCEPTIBILITY TESTING
+OLD PASS rank=2  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 3  ACG_0002  p1  ABSTRACT
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0033  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 6  ACG_0037  p9  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 7  ACG_0007  p2  METHODS
+  # 8  ACG_0006  p2  METHODS
+  # 9  ACG_0034  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  #10  ACG_0032  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0047  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 2  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 3  ACG_0033  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 4  ACG_0046  p11  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Key concept *
+  # 5  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 6  ACG_0066  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation
+  # 7  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 8  ACG_T0098  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 9  ACG_0045  p11  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Key concept *
+  #10  ACG_0065  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation
+
+========================================================================
+Q06 — Which regimen is preferred for treatment-experienced patients who have not previously received optimized bismuth quadruple therapy?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 3  ACG_0002  p1  ABSTRACT *
+  # 4  ACG_0005  p2  INTRODUCTION
+  # 5  ACG_0006  p2  METHODS
+  # 6  ACG_0003  p2  INTRODUCTION
+  # 7  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 8  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0007  p2  METHODS
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 2  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 3  ACG_T0101  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 4  ACG_T0096  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl
+  # 5  ACG_0075  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 6  ACG_0082  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation experienced patients *
+  # 7  ACG_0065  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 8  ACG_0057  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 9  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  #10  ACG_0074  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+
+========================================================================
+Q07 — What is rifabutin triple therapy and when is it used?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS, ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0002  p1  ABSTRACT *
+  # 3  ACG_0007  p2  METHODS
+  # 4  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 5  ACG_0005  p2  INTRODUCTION
+  # 6  ACG_0006  p2  METHODS
+  # 7  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 8  ACG_0003  p2  INTRODUCTION
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0037  p9  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 2  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 3  ACG_0070  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 4  ACG_0071  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 5  ACG_0067  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 6  ACG_0036  p9  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 7  ACG_0083  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation experienced patients *
+  # 8  ACG_0037  p9  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 9  ACG_T0101  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  #10  ACG_0069  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+
+========================================================================
+Q08 — When may a salvage regimen containing clarithromycin or levofloxacin be used?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0002  p1  ABSTRACT *
+  # 2  ACG_0001  p1  ABSTRACT *
+  # 3  ACG_0005  p2  INTRODUCTION
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 6  ACG_0007  p2  METHODS
+  # 7  ACG_0004  p2  INTRODUCTION
+  # 8  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 9  ACG_0045  p11  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Key concept
+  #10  ACG_0006  p2  METHODS
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0102  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 2  ACG_T0099  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 3  ACG_0066  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 4  ACG_T0101  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 5  ACG_0077  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 6  ACG_0083  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation experienced patients *
+  # 7  ACG_0046  p11  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Key concept
+  # 8  ACG_0045  p11  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Key concept
+  # 9  ACG_0089  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  #10  ACG_0072  p17  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Key concept *
+
+========================================================================
+Q09 — What does optimized bismuth quadruple therapy mean in terms of dosing?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS, ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS
+OLD PASS rank=2  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 3  ACG_0002  p1  ABSTRACT
+  # 4  ACG_0007  p2  METHODS
+  # 5  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 6  ACG_0006  p2  METHODS
+  # 7  ACG_0003  p2  INTRODUCTION
+  # 8  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0005  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0096  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 2  ACG_T0099  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 3  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 4  ACG_T0095  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 5  ACG_T0101  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 6  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations *
+  # 7  ACG_T0097  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl *
+  # 8  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+  # 9  ACG_0075  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  #10  ACG_0041  p10  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+
+========================================================================
+Q10 — How should a patient who has failed two courses of eradication therapy be managed?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS
+OLD PASS rank=5  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0004  p2  INTRODUCTION
+  # 3  ACG_0002  p1  ABSTRACT
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0056  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E *
+  # 6  ACG_0007  p2  METHODS
+  # 7  ACG_0005  p2  INTRODUCTION
+  # 8  ACG_0006  p2  METHODS
+  # 9  ACG_0025  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  #10  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations *
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0056  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E *
+  # 2  ACG_0078  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 3  ACG_0059  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 4  ACG_0073  p17  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Key concept *
+  # 5  ACG_0067  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 6  ACG_0058  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 7  ACG_0047  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation
+  # 8  ACG_0062  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 9  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  #10  ACG_0077  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+
+========================================================================
+Q11 — Should all patients treated for H. pylori undergo testing to confirm eradication?
+Expect: POST-TREATMENT TESTING FOR CURE, ABSTRACT
+OLD PASS rank=2  |  NEW PASS rank=3
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0003  p2  INTRODUCTION
+  # 2  ACG_0001  p1  ABSTRACT *
+  # 3  ACG_0002  p1  ABSTRACT *
+  # 4  ACG_0004  p2  INTRODUCTION
+  # 5  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 6  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  # 7  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0007  p2  METHODS
+  #10  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment
+  # 2  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  # 3  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 4  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 5  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions
+  # 6  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  # 7  ACG_0029  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  # 8  ACG_0054  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 9  ACG_0019  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions
+  #10  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+
+========================================================================
+Q12 — How long after completing therapy should test of cure be performed?
+Expect: POST-TREATMENT TESTING FOR CURE
+OLD PASS rank=6  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0002  p1  ABSTRACT
+  # 2  ACG_0001  p1  ABSTRACT
+  # 3  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 4  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  # 5  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment
+  # 6  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 7  ACG_0003  p2  INTRODUCTION
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0007  p2  METHODS
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 2  ACG_0055  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 3  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  # 4  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 5  ACG_0054  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 6  ACG_0004  p2  INTRODUCTION
+  # 7  ACG_0002  p1  ABSTRACT
+  # 8  ACG_0019  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions
+  # 9  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  #10  ACG_0003  p2  INTRODUCTION
+
+========================================================================
+Q13 — Which tests are appropriate for confirming H. pylori eradication after treatment?
+Expect: POST-TREATMENT TESTING FOR CURE
+OLD PASS rank=2  |  NEW PASS rank=2
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 3  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0003  p2  INTRODUCTION
+  # 6  ACG_0004  p2  INTRODUCTION
+  # 7  ACG_0028  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0007  p2  METHODS
+  #10  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  # 2  ACG_0055  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 3  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 4  ACG_0029  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  # 5  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 6  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  # 7  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 8  ACG_0054  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept *
+  # 9  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions
+  #10  ACG_0028  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+
+========================================================================
+Q14 — Which patients should be tested for H. pylori infection?
+Expect: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 2  ACG_0001  p1  ABSTRACT *
+  # 3  ACG_0002  p1  ABSTRACT *
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0004  p2  INTRODUCTION
+  # 6  ACG_0005  p2  INTRODUCTION
+  # 7  ACG_0006  p2  METHODS
+  # 8  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 9  ACG_0009  p3  EPIDEMIOLOGY
+       / Key concept
+  #10  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+  # 2  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 3  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 4  ACG_T0096  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl
+  # 5  ACG_T0098  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 5. Recommended regimens for treatment-naive patients with H. pyl
+  # 6  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 7  ACG_0054  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept
+  # 8  ACG_T0100  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien
+  # 9  ACG_0072  p17  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Key concept
+  #10  ACG_T0102  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien
+
+========================================================================
+Q15 — Should patients with active or prior peptic ulcer disease be tested for H. pylori?
+Expect: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT
+OLD PASS rank=2  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 3  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept
+  # 6  ACG_0005  p2  INTRODUCTION
+  # 7  ACG_0003  p2  INTRODUCTION
+  # 8  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+  # 9  ACG_0006  p2  METHODS
+  #10  ACG_0004  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 2  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 3  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+  # 4  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 5  ACG_0020  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 6  ACG_0054  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept
+  # 7  ACG_0053  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept
+  # 8  ACG_0019  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 9  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  #10  ACG_0005  p2  INTRODUCTION
+
+========================================================================
+Q16 — Is H. pylori testing indicated before starting long-term low-dose aspirin or NSAID therapy?
+Expect: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 2  ACG_0001  p1  ABSTRACT
+  # 3  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0003  p2  INTRODUCTION
+  # 6  ACG_0004  p2  INTRODUCTION
+  # 7  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 8  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 9  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  #10  ACG_0005  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 2  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 3  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 4  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+  # 5  ACG_0089  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 6  ACG_0029  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 7  ACG_0004  p2  INTRODUCTION
+  # 8  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 9  ACG_0027  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  #10  ACG_0023  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+
+========================================================================
+Q17 — Should patients with unexplained iron deficiency anemia be tested for H. pylori?
+Expect: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 2  ACG_0001  p1  ABSTRACT
+  # 3  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept
+  # 4  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 5  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 6  ACG_0030  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 7  ACG_0002  p1  ABSTRACT
+  # 8  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 9  ACG_0003  p2  INTRODUCTION
+  #10  ACG_0004  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 2  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 3  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 4  ACG_0030  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 5  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+  # 6  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept
+  # 7  ACG_0004  p2  INTRODUCTION
+  # 8  ACG_0020  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 9  ACG_0005  p2  INTRODUCTION
+  #10  ACG_0001  p1  ABSTRACT
+
+========================================================================
+Q18 — Should first-degree relatives of patients with gastric cancer be tested?
+Expect: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT
+OLD PASS rank=2  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 3  ACG_0003  p2  INTRODUCTION
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 6  ACG_0005  p2  INTRODUCTION
+  # 7  ACG_0028  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 8  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0025  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 2  ACG_0028  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 3  ACG_0027  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 4  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 5  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+  # 6  ACG_0022  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 7  ACG_0002  p1  ABSTRACT
+  # 8  ACG_0030  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0001  p1  ABSTRACT
+
+========================================================================
+Q19 — Does eradicating H. pylori reduce the risk of gastric cancer?
+Expect: INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMENT, EPIDEMIOLOGY
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 2  ACG_0001  p1  ABSTRACT
+  # 3  ACG_0003  p2  INTRODUCTION
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment *
+  # 6  ACG_0023  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 7  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 8  ACG_0024  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 9  ACG_0025  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  #10  ACG_0004  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0025  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 2  ACG_0026  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 3  ACG_0028  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 4  ACG_0092  p21  FUTURE RESEARCH PRIORITIES
+  # 5  ACG_0023  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 6  ACG_0027  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 7  ACG_0029  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  # 8  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions *
+  # 9  ACG_0024  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o *
+  #10  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept *
+
+========================================================================
+Q20 — What is the prevalence of H. pylori infection in North America?
+Expect: EPIDEMIOLOGY, INTRODUCTION
+OLD PASS rank=2  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0009  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 3  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 4  ACG_0002  p1  ABSTRACT
+  # 5  ACG_0003  p2  INTRODUCTION *
+  # 6  ACG_0005  p2  INTRODUCTION *
+  # 7  ACG_0014  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 8  ACG_0004  p2  INTRODUCTION *
+  # 9  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts *
+  #10  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0009  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 2  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts *
+  # 3  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 4  ACG_0092  p21  FUTURE RESEARCH PRIORITIES
+  # 5  ACG_0093  p21  FUTURE RESEARCH PRIORITIES
+  # 6  ACG_0034  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation
+  # 7  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts *
+  # 8  ACG_0014  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 9  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  #10  ACG_0023  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+
+========================================================================
+Q21 — Which population groups in the United States have a higher burden of H. pylori infection?
+Expect: EPIDEMIOLOGY
+OLD PASS rank=2  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0014  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 3  ACG_0009  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 4  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts *
+  # 5  ACG_0034  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation
+  # 6  ACG_0002  p1  ABSTRACT
+  # 7  ACG_0004  p2  INTRODUCTION
+  # 8  ACG_0006  p2  METHODS
+  # 9  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept *
+  #10  ACG_0003  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0009  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 2  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts *
+  # 3  ACG_0013  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 4  ACG_0014  p3  EPIDEMIOLOGY
+       / Key concept *
+  # 5  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts *
+  # 6  ACG_0023  p6  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / H. pylori testing and treatment for primary and secondary prevention o
+  # 7  ACG_0034  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation
+  # 8  ACG_0021  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Table 4. Indications for H. pylori testing and treatment
+  # 9  ACG_0055  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept
+  #10  ACG_0018  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Indications for H. pylori testing and treatment for benign conditions
+
+========================================================================
+Q22 — What is the role of antibiotic susceptibility testing in selecting H. pylori therapy?
+Expect: ANTIBIOTIC SUSCEPTIBILITY TESTING, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0002  p1  ABSTRACT *
+  # 2  ACG_0001  p1  ABSTRACT *
+  # 3  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 4  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 5  ACG_0003  p2  INTRODUCTION
+  # 6  ACG_0007  p2  METHODS
+  # 7  ACG_0006  p2  METHODS
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0004  p2  INTRODUCTION
+  #10  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0087  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 2  ACG_0084  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 3  ACG_0089  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 4  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 5  ACG_0086  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 6  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 7  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 8  ACG_0093  p21  FUTURE RESEARCH PRIORITIES
+  # 9  ACG_0082  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation experienced patients
+  #10  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients
+
+========================================================================
+Q23 — What molecular methods are available for H. pylori antibiotic susceptibility testing?
+Expect: ANTIBIOTIC SUSCEPTIBILITY TESTING, INTRODUCTION
+OLD PASS rank=4  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0002  p1  ABSTRACT
+  # 3  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 4  ACG_0003  p2  INTRODUCTION *
+  # 5  ACG_0006  p2  METHODS
+  # 6  ACG_0007  p2  METHODS
+  # 7  ACG_0008  p2  METHODS
+  # 8  ACG_0005  p2  INTRODUCTION *
+  # 9  ACG_0004  p2  INTRODUCTION *
+  #10  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0084  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 2  ACG_0086  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 3  ACG_0085  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 4  ACG_0089  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 5  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 6  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 7  ACG_0093  p21  FUTURE RESEARCH PRIORITIES
+  # 8  ACG_0087  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept *
+  # 9  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  #10  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+
+========================================================================
+Q24 — Do probiotics improve H. pylori eradication rates?
+Expect: PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+OLD FAIL rank=-  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0005  p2  INTRODUCTION
+  # 3  ACG_0007  p2  METHODS
+  # 4  ACG_0006  p2  METHODS
+  # 5  ACG_0003  p2  INTRODUCTION
+  # 6  ACG_0004  p2  INTRODUCTION
+  # 7  ACG_0002  p1  ABSTRACT
+  # 8  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 9  ACG_0008  p2  METHODS
+  #10  ACG_0009  p3  EPIDEMIOLOGY
+       / Key concept
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0090  p20  PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+       / Recommendation *
+  # 2  ACG_0091  p20  PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+       / Recommendation *
+  # 3  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 4  ACG_0006  p2  METHODS
+  # 5  ACG_0007  p2  METHODS
+  # 6  ACG_0004  p2  INTRODUCTION
+  # 7  ACG_0055  p13  POST-TREATMENT TESTING FOR CURE
+       / Key concept
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0003  p2  INTRODUCTION
+  #10  ACG_0062  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation
+
+========================================================================
+Q25 — Are probiotics recommended as an adjunct to eradication therapy?
+Expect: PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+OLD FAIL rank=-  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0002  p1  ABSTRACT
+  # 3  ACG_0007  p2  METHODS
+  # 4  ACG_0006  p2  METHODS
+  # 5  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 6  ACG_0003  p2  INTRODUCTION
+  # 7  ACG_0004  p2  INTRODUCTION
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  #10  ACG_0015  p5  EPIDEMIOLOGY
+       / Key concepts
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0091  p20  PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+       / Recommendation *
+  # 2  ACG_0090  p20  PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+       / Recommendation *
+  # 3  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 4  ACG_0006  p2  METHODS
+  # 5  ACG_0007  p2  METHODS
+  # 6  ACG_0004  p2  INTRODUCTION
+  # 7  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 8  ACG_0005  p2  INTRODUCTION
+  # 9  ACG_0001  p1  ABSTRACT
+  #10  ACG_0008  p2  METHODS
+
+========================================================================
+Q26 — What methodology was used to develop and grade the recommendations?
+Expect: METHODS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=2
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0004  p2  INTRODUCTION
+  # 3  ACG_0005  p2  INTRODUCTION
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0002  p1  ABSTRACT *
+  # 6  ACG_0007  p2  METHODS *
+  # 7  ACG_0008  p2  METHODS *
+  # 8  ACG_0006  p2  METHODS *
+  # 9  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  #10  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0094  p3  SUMMARY OF KEY CONCEPTS
+       / Table 1. GRADE criteria
+  # 2  ACG_0008  p2  METHODS *
+  # 3  ACG_0006  p2  METHODS *
+  # 4  ACG_0005  p2  INTRODUCTION
+  # 5  ACG_0004  p2  INTRODUCTION
+  # 6  ACG_0007  p2  METHODS *
+  # 7  ACG_0001  p1  ABSTRACT *
+  # 8  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 9  ACG_0065  p16  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation
+  #10  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+
+========================================================================
+Q27 — How many PICO questions and key concepts does the guideline contain?
+Expect: METHODS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=2
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0006  p2  METHODS *
+  # 3  ACG_0004  p2  INTRODUCTION
+  # 4  ACG_0005  p2  INTRODUCTION
+  # 5  ACG_0008  p2  METHODS *
+  # 6  ACG_0003  p2  INTRODUCTION
+  # 7  ACG_0002  p1  ABSTRACT *
+  # 8  ACG_0007  p2  METHODS *
+  # 9  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  #10  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0094  p3  SUMMARY OF KEY CONCEPTS
+       / Table 1. GRADE criteria
+  # 2  ACG_0006  p2  METHODS *
+  # 3  ACG_0008  p2  METHODS *
+  # 4  ACG_0005  p2  INTRODUCTION
+  # 5  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 6  ACG_0017  p5  INDICATIONS FOR HELICOBACTER PYLORI TESTING AND TREATMEN
+       / Key concept
+  # 7  ACG_0001  p1  ABSTRACT *
+  # 8  ACG_0004  p2  INTRODUCTION
+  # 9  ACG_0038  p10  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation
+  #10  ACG_0089  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+
+========================================================================
+Q28 — What are the criteria for a strong versus conditional recommendation?
+Expect: METHODS
+OLD PASS rank=5  |  NEW PASS rank=3
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT
+  # 2  ACG_0002  p1  ABSTRACT
+  # 3  ACG_0004  p2  INTRODUCTION
+  # 4  ACG_0003  p2  INTRODUCTION
+  # 5  ACG_0008  p2  METHODS *
+  # 6  ACG_0007  p2  METHODS *
+  # 7  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 8  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 9  ACG_0005  p2  INTRODUCTION
+  #10  ACG_T0094  p3  SUMMARY OF KEY CONCEPTS
+       / Table 1. GRADE criteria
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0094  p3  SUMMARY OF KEY CONCEPTS
+       / Table 1. GRADE criteria
+  # 2  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  # 3  ACG_0008  p2  METHODS *
+  # 4  ACG_0074  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation
+  # 5  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 6  ACG_0047  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation
+  # 7  ACG_0090  p20  PROBIOTICS AND HELICOBACTER PYLORI THERAPY
+       / Recommendation
+  # 8  ACG_0007  p2  METHODS *
+  # 9  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  #10  ACG_0004  p2  INTRODUCTION
+
+========================================================================
+Q29 — What knowledge gaps and research priorities did the guideline identify?
+Expect: FUTURE RESEARCH PRIORITIES
+OLD FAIL rank=-  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0002  p1  ABSTRACT
+  # 2  ACG_0001  p1  ABSTRACT
+  # 3  ACG_0003  p2  INTRODUCTION
+  # 4  ACG_0004  p2  INTRODUCTION
+  # 5  ACG_0006  p2  METHODS
+  # 6  ACG_0005  p2  INTRODUCTION
+  # 7  ACG_0008  p2  METHODS
+  # 8  ACG_0007  p2  METHODS
+  # 9  ACG_0010  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Table 2. Guideline recommendations
+  #10  ACG_0011  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_0092  p21  FUTURE RESEARCH PRIORITIES *
+  # 2  ACG_0005  p2  INTRODUCTION
+  # 3  ACG_0002  p1  ABSTRACT
+  # 4  ACG_0012  p3  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 2. Guideline recommendations
+  # 5  ACG_0093  p21  FUTURE RESEARCH PRIORITIES *
+  # 6  ACG_0001  p1  ABSTRACT
+  # 7  ACG_0006  p2  METHODS
+  # 8  ACG_0008  p2  METHODS
+  # 9  ACG_0003  p2  INTRODUCTION
+  #10  ACG_0004  p2  INTRODUCTION
+
+========================================================================
+Q30 — How should H. pylori be managed in patients with a penicillin allergy?
+Expect: ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-NAIVE PATIENTS, ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-EXPERIENCED PATIENTS, ABSTRACT
+OLD PASS rank=1  |  NEW PASS rank=1
+
+--- OLD: minmax (70/30, old) — TOP 10 ---
+  # 1  ACG_0001  p1  ABSTRACT *
+  # 2  ACG_0031  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N *
+  # 3  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 4  ACG_0056  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E *
+  # 5  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 6  ACG_0002  p1  ABSTRACT *
+  # 7  ACG_0003  p2  INTRODUCTION
+  # 8  ACG_0033  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  # 9  ACG_0034  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  #10  ACG_0004  p2  INTRODUCTION
+
+--- NEW: rrf + downrank + MedCPT rerank — TOP 10 ---
+  # 1  ACG_T0102  p14  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Table 6. Recommended salvage regimens for treatment-experienced patien *
+  # 2  ACG_0052  p12  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Summary of recommendations for treatment-naive patients *
+  # 3  ACG_0056  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E *
+  # 4  ACG_0031  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N *
+  # 5  ACG_0061  p13  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation *
+  # 6  ACG_0088  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 7  ACG_0084  p19  ANTIBIOTIC SUSCEPTIBILITY TESTING
+       / Key concept
+  # 8  ACG_0016  p5  EPIDEMIOLOGY
+       / Key concepts
+  # 9  ACG_0033  p8  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-N
+       / Recommendation *
+  #10  ACG_0082  p18  ERADICATING HELICOBACTER PYLORI INFECTION IN TREATMENT-E
+       / Recommendation experienced patients *
+
+* = chunk section matches an expected section
