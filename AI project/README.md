@@ -1,4 +1,7 @@
-# ACG H. pylori — Person 2: Parsing + Cleaning + Chunking
+# ACG H. pylori — Layer 1: Parsing + Cleaning + Chunking
+
+> **Project root:** see `../README.md` for full architecture.  
+> Run everything from root with `python run_pipeline.py`, or use `RUN_ME.bat` here.
 
 ## How to run
 
