@@ -299,6 +299,57 @@ def format_hit_line(h: dict) -> str:
     return line
 
 
+FULL_COMPARE_K = 10
+
+
+def side_by_side_gold(
+    old: MinMaxRetriever,
+    new: RRFRerankRetriever,
+    gold: list[dict],
+    k: int = FULL_COMPARE_K,
+) -> str:
+    lines = [
+        "",
+        "=" * 72,
+        f"FULL GOLD SET — OLD vs NEW (top {k}, side-by-side)",
+        "=" * 72,
+        f"  OLD: {old.name}",
+        f"  NEW: {new.name}",
+        "",
+    ]
+    for g in gold:
+        want = {s.upper() for s in g["expect_sections"]}
+        old_idx = old.search(g["q"], k=k)
+        new_idx = new.search(g["q"], k=k)
+        old_secs = [old.chunks[i].get("section", "").upper() for i in old_idx]
+        new_secs = [new.chunks[i].get("section", "").upper() for i in new_idx]
+        old_rank = next((r for r, s in enumerate(old_secs, 1) if s in want), None)
+        new_rank = next((r for r, s in enumerate(new_secs, 1) if s in want), None)
+        status_old = "PASS" if old_rank else "FAIL"
+        status_new = "PASS" if new_rank else "FAIL"
+
+        lines.append(f"\n{'=' * 72}")
+        lines.append(f"{g['id']} — {g['q']}")
+        lines.append(f"Expect: {', '.join(g['expect_sections'])}")
+        lines.append(
+            f"OLD {status_old} rank={old_rank or '-'}  |  "
+            f"NEW {status_new} rank={new_rank or '-'}"
+        )
+        lines.append(f"\n--- OLD: {old.name} — TOP {k} ---")
+        for r, i in enumerate(old_idx, 1):
+            hit = hit_row(old.chunks[i], r)
+            mark = " *" if hit["section"].upper() in want else ""
+            lines.append(format_hit_line(hit) + mark)
+        lines.append(f"\n--- NEW: {new.name} — TOP {k} ---")
+        for r, i in enumerate(new_idx, 1):
+            hit = hit_row(new.chunks[i], r)
+            mark = " *" if hit["section"].upper() in want else ""
+            lines.append(format_hit_line(hit) + mark)
+    lines.append("")
+    lines.append("* = chunk section matches an expected section")
+    return "\n".join(lines)
+
+
 def compare_table(results: dict[str, dict]) -> str:
     lines = [
         "",
@@ -368,22 +419,9 @@ def main() -> None:
         out.append(table)
         print(table)
 
-        # Side-by-side on a few high-value queries
-        samples = [
-            ("Q01", gold[0]["q"]),
-            ("Q02", gold[1]["q"]),
-            ("Q11", gold[10]["q"]),
-            ("Q20", gold[19]["q"]),
-        ]
-        out.append("\n--- SAMPLE QUERY COMPARISON (top 3) ---")
-        for label, q in samples:
-            out.append(f"\n{label}: {q[:70]}")
-            for ret in (minmax, rrf_rerank):
-                top3 = ret.search(q, k=3)
-                out.append(f"  [{ret.name}]")
-                for r, i in enumerate(top3, 1):
-                    c = ret.chunks[i]
-                    out.append(f"    #{r} {c['chunk_id']} {c['section'][:50]}")
+        full = side_by_side_gold(minmax, rrf_rerank, gold, k=FULL_COMPARE_K)
+        out.append(full)
+        print(full)
 
     shipping = rrf_rerank
     if args.query:
