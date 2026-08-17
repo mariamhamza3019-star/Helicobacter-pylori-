@@ -2,11 +2,18 @@
 # Task 4: Generating Embeddings for Chunks
 
 import json
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
-import os
-from datetime import datetime
+
+# Allow imports when run from repo root
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from paths import CHUNKS_JSON, EMBEDDINGS_JSON
 
 class EmbeddingGenerator:
     def __init__(self, model_name='pritamdeka/S-BioBert-snli-multinli-stsb'):
@@ -99,17 +106,18 @@ class EmbeddingGenerator:
         return output
 
 def main():
-    # 🔥 استخدمي المسار الصحيح للملف
-    INPUT_FILE = 'data/processed/acg_chunks.json'  # الملف اللي عندك
-    OUTPUT_FILE = 'chunks_with_embeddings.json'    # النتيجة
-    
-    if not os.path.exists(INPUT_FILE):
-        print(f"❌ خطأ: الملف {INPUT_FILE} غير موجود!")
-        print("📌 تأكد من أنك في المجلد الصحيح")
+    INPUT_FILE = CHUNKS_JSON
+    OUTPUT_FILE = EMBEDDINGS_JSON
+
+    if not INPUT_FILE.exists():
+        print(f"Error: {INPUT_FILE} not found — run ingestion first:")
+        print("  python run_pipeline.py")
         return
+
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     
     generator = EmbeddingGenerator()
-    generator.run_pipeline(INPUT_FILE, OUTPUT_FILE)
+    generator.run_pipeline(str(INPUT_FILE), str(OUTPUT_FILE))
 
 if __name__ == "__main__":
     main()
