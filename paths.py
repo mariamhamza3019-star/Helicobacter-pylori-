@@ -23,5 +23,6 @@ EMBEDDINGS_JSON = OUTPUTS / "chunks_with_embeddings.json"
 FAISS_INDEX = OUTPUTS / "h_pylori_faiss.index"
 METADATA_JSON = OUTPUTS / "h_pylori_metadata.json"
 RETRIEVAL_CSV = OUTPUTS / "retrieval_results.csv"
+HYBRID_REPORT = OUTPUTS / "hybrid_search_report.txt"
 
 NOTEBOOKS = ROOT / "notebooks"
