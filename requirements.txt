@@ -7,3 +7,6 @@ tqdm
 torch
 faiss-cpu
 pandas
+openai
+pydantic
+jsonschema
