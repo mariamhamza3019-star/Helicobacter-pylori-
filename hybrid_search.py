@@ -243,7 +243,7 @@ class RRFRerankRetriever:
         self.reranker = reranker
         self.chunks = base.chunks
 
-    def search(self, query: str, k: int = 10) -> list[int]:
+    def _ranked_with_scores(self, query: str, k: int) -> list[tuple[int, float]]:
         pool_idx = self.rrf.candidate_pool(query)
         if not pool_idx:
             return []
@@ -253,8 +253,16 @@ class RRFRerankRetriever:
         for j, i in enumerate(pool_idx):
             scores[j] *= section_multiplier(self.chunks[i])
         order = np.argsort(-scores)
-        ranked = [pool_idx[i] for i in order]
-        return ranked[:k]
+        top = order[:k]
+        normed = minmax_norm(scores[top])
+        return [(pool_idx[i], float(normed[j])) for j, i in enumerate(top)]
+
+    def search(self, query: str, k: int = 10) -> list[int]:
+        return [i for i, _ in self._ranked_with_scores(query, k)]
+
+    def search_with_scores(self, query: str, k: int = 10) -> list[tuple[int, float]]:
+        """Return (chunk_index, relevance_score) pairs; scores are min-max normalized."""
+        return self._ranked_with_scores(query, k)
 
 
 def eval_retriever(retriever, gold: list[dict]) -> dict:
