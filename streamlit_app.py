@@ -157,16 +157,22 @@ def chunk_for_generation(c: dict, score: float | None = None) -> dict:
     return out
 
 
+def search_with_optional_scores(
+    retriever, query: str, k: int
+) -> list[tuple[int, float | None]]:
+    """Return (chunk_index, score) pairs; score is set when reranker scores are available."""
+    if isinstance(retriever, RRFRerankRetriever):
+        return retriever.search_with_scores(query, k=k)
+    indices = retriever.search(query, k=k)
+    return [(i, None) for i in indices]
+
+
 def retrieve_for_generation(
     retriever, query: str, k: int, all_chunks: list[dict]
 ) -> tuple[list[dict], list[int]]:
-    if isinstance(retriever, RRFRerankRetriever):
-        ranked = retriever.search_with_scores(query, k=k)
-        indices = [i for i, _ in ranked]
-        gen_chunks = [chunk_for_generation(all_chunks[i], score=s) for i, s in ranked]
-        return gen_chunks, indices
-    indices = retriever.search(query, k=k)
-    gen_chunks = [chunk_for_generation(all_chunks[i]) for i in indices]
+    ranked = search_with_optional_scores(retriever, query, k)
+    indices = [i for i, _ in ranked]
+    gen_chunks = [chunk_for_generation(all_chunks[i], score=s) for i, s in ranked]
     return gen_chunks, indices
 
 
@@ -209,19 +215,20 @@ def render_generation_result(result: dict):
                 st.caption(w)
 
 
-def render_hit(rank: int, c: dict, expect_sections=None):
+def render_hit(rank: int, c: dict, expect_sections=None, score: float | None = None):
     page = c.get("page_start") or c.get("page")
     is_expected = expect_sections and c.get("section", "").upper() in {
         s.upper() for s in expect_sections
     }
     card_class = "hit-card expect-hit" if is_expected else "hit-card"
     sub = f" / {c['subsection']}" if c.get("subsection") else ""
+    score_note = f" · score {score:.3f}" if score is not None else ""
     st.markdown(
         f"""
         <div class="{card_class}">
             <span class="hit-rank">#{rank}</span>
             <span class="section-tag">{c.get('section','')}{sub}</span>
-            <div class="hit-meta">{c.get('chunk_id','')} · p.{page} · {c.get('content_type','prose')}
+            <div class="hit-meta">{c.get('chunk_id','')} · p.{page} · {c.get('content_type','prose')}{score_note}
             {' · ✅ expected section' if is_expected else ''}</div>
             <div>{c['text']}</div>
         </div>
@@ -279,11 +286,11 @@ with tab_query:
             with st.spinner(f"Retrieving with: {pipeline_label}..."):
                 retriever = get_retriever(pipeline_key, base)
                 t0 = time.time()
-                idx = retriever.search(query, k=top_k)
+                ranked = search_with_optional_scores(retriever, query, k=int(top_k))
                 elapsed = time.time() - t0
-            st.success(f"{len(idx)} results in {elapsed:.2f}s — **{retriever.name}**")
-            for rank, i in enumerate(idx, 1):
-                render_hit(rank, chunks[i])
+            st.success(f"{len(ranked)} results in {elapsed:.2f}s — **{retriever.name}**")
+            for rank, (i, score) in enumerate(ranked, 1):
+                render_hit(rank, chunks[i], score=score)
 
 # ---------------------------------------------------------------------------
 # TAB 2 — Gold questions, pick-your-own via checklist
@@ -325,9 +332,11 @@ with tab_gold:
                 for n, g in enumerate(selected, 1):
                     with st.expander(f"{g['id']} — {g['q']}", expanded=True):
                         st.caption(f"Expected section(s): {', '.join(g['expect_sections'])}")
-                        idx = retriever.search(g["q"], k=10)
-                        for rank, i in enumerate(idx, 1):
-                            render_hit(rank, chunks[i], expect_sections=g["expect_sections"])
+                        ranked = search_with_optional_scores(retriever, g["q"], k=10)
+                        for rank, (i, score) in enumerate(ranked, 1):
+                            render_hit(
+                                rank, chunks[i], expect_sections=g["expect_sections"], score=score
+                            )
                     progress.progress(n / len(selected))
 
 # ---------------------------------------------------------------------------
@@ -388,16 +397,15 @@ with tab_pipeline:
                 f"**{shipping.name}**"
             )
 
-            if not has_api_key and retrieved:
-                top_score = max((c.get("score") or 1.0) for c in retrieved)
-                if top_score >= 0.35:
-                    st.error(
-                        "Generation requires `OPENAI_API_KEY` or `GENERATION_API_KEY`. "
-                        "Retrieved evidence is shown below."
-                    )
-                    for rank, i in enumerate(hit_indices, 1):
-                        render_hit(rank, chunks[i])
-                    st.stop()
+            if not has_api_key:
+                st.error(
+                    "Generation requires `OPENAI_API_KEY` or `GENERATION_API_KEY`. "
+                    "Retrieved evidence is shown below."
+                )
+                for rank, i in enumerate(hit_indices, 1):
+                    chunk = retrieved[rank - 1]
+                    render_hit(rank, chunks[i], score=chunk.get("score"))
+                st.stop()
 
             with st.spinner("Generating grounded answer..."):
                 t1 = time.time()
@@ -415,6 +423,4 @@ with tab_pipeline:
             st.markdown("#### Retrieved evidence")
             for rank, i in enumerate(hit_indices, 1):
                 chunk = retrieved[rank - 1]
-                score_note = f" · score {chunk['score']:.3f}" if chunk.get("score") is not None else ""
-                st.caption(f"#{rank}{score_note}")
-                render_hit(rank, chunks[i])
+                render_hit(rank, chunks[i], score=chunk.get("score"))

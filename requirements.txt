@@ -10,3 +10,4 @@ pandas
 openai
 pydantic
 jsonschema
+streamlit
