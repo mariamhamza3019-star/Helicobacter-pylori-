@@ -16,6 +16,7 @@ come alive once that's built.
 """
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -34,6 +35,7 @@ from hybrid_search import (  # noqa: E402
     MedCPTReranker,
     eval_retriever,
 )
+from generation import generate_answer  # noqa: E402
 
 st.set_page_config(page_title="H. pylori RAG — Tester", layout="wide", page_icon="🔬")
 
@@ -248,42 +250,77 @@ with tab_gold:
                     progress.progress(n / len(selected))
 
 # ---------------------------------------------------------------------------
-# TAB 3 — Full RAG pipeline (placeholder until generation/safety layers exist)
+# TAB 3 — Full RAG pipeline (generation + grounding)
 # ---------------------------------------------------------------------------
 with tab_pipeline:
-    st.markdown(
-        """
-        <div class="placeholder-box">
-            <h3>🧬 Full RAG Pipeline — coming soon</h3>
-            <p>This tab will run the complete question → answer flow once the
-            remaining layers are built. Right now the repo only implements
-            Layers 1–2.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.markdown("### 🧬 Full RAG Pipeline")
+
+    # Check API key
+    api_key_set = os.getenv("GROQ_API_KEY") is not None
+    if not api_key_set:
+        st.warning(
+            "⚠️ **Set GROQ_API_KEY first**\n\n"
+            "PowerShell: `$env:GROQ_API_KEY = 'gsk-...'`\n\n"
+            "[Get key](https://console.groq.com/keys)"
+        )
+
+    # Query input
+    question = st.text_input(
+        "Ask a question",
+        placeholder="e.g. What is first-line therapy?",
+        key="rag_question",
     )
 
-    st.markdown("#### Pipeline status")
-    steps = [
-        ("Layer 1 — Ingestion", "PDF → chunks + metadata", True),
-        ("Layer 1 — Embeddings", "BioBERT vectors + FAISS index", True),
-        ("Layer 2 — Retrieval", "Hybrid RRF + MedCPT rerank", True),
-        ("Layer 3 — Generation", "Grounded LLM answer + citations", False),
-        ("Layer 4 — Safety", "Hallucination check / refusal", False),
-    ]
-    for name, desc, done in steps:
-        icon = "✅" if done else "⬜"
-        st.markdown(f"{icon} **{name}** — {desc}")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        top_k = st.number_input("Top K", min_value=1, max_value=10, value=5, key="rag_k")
+    with col2:
+        run_btn = st.button("Run", type="primary", key="rag_run")
 
+    if run_btn:
+        if not question.strip():
+            st.warning("Enter a question")
+        elif not api_key_set:
+            st.error("Set GROQ_API_KEY first")
+        else:
+            # Retrieve
+            retriever = get_retriever(pipeline_key, base)
+            idx = retriever.search(question, k=top_k)
+            retrieved_chunks = [chunks[i] for i in idx]
+
+            # Generate
+            result = generate_answer(question, retrieved_chunks)
+
+            # Display
+            st.markdown("---")
+            if result.get("refused"):
+                st.warning(f"Refused: {result.get('refusal_reason')}")
+            else:
+                st.success("✅ Answer")
+                st.markdown(f"**{result.get('recommendation')}**")
+                if result.get("citations"):
+                    st.markdown("**Sources:**")
+                    for cite in result["citations"]:
+                        st.text(f"{cite['chunk_id']} - {cite['section']} (p{cite['page']})")
+            
+            # Show errors
+            if result.get("validation_errors"):
+                st.error(f"Issues: {', '.join(result['validation_errors'])}")
+            
+            # Show chunks
+            with st.expander("Retrieved evidence"):
+                for i, chunk in enumerate(retrieved_chunks, 1):
+                    render_hit(i, chunk)
+
+    # Status
     st.markdown("---")
-    st.text_input(
-        "Ask a question end-to-end (disabled until Layer 3 ships)",
-        placeholder="Coming soon...",
-        disabled=True,
-    )
-    st.button("Run full pipeline", disabled=True)
-    st.caption(
-        "Once you add the generation step, wire it in here: retrieve top-k "
-        "with the shipping pipeline, pass the chunks + question to your LLM, "
-        "and render the answer above the retrieved evidence."
-    )
+    st.markdown("**Pipeline Status:**")
+    steps = [
+        ("Layer 1 — Ingestion", True),
+        ("Layer 2 — Retrieval", True),
+        ("Layer 3 — Generation", True),
+        ("Layer 4 — Safety", True),
+    ]
+    for name, done in steps:
+        icon = "✅" if done else "⬜"
+        st.markdown(f"{icon} {name}")

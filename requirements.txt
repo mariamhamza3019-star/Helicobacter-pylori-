@@ -7,3 +7,4 @@ tqdm
 torch
 faiss-cpu
 pandas
+groq
