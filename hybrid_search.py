@@ -15,10 +15,17 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import sys
 from abc import ABC, abstractmethod
 from collections import Counter
+
+# Redirect HF model cache to project directory (symlinks work, more disk space).
+_HF_CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".hf_cache")
+os.environ.setdefault("HF_HOME", _HF_CACHE)
+os.environ.setdefault("TRANSFORMERS_CACHE", _HF_CACHE)
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 import faiss
 import numpy as np
@@ -149,8 +156,9 @@ class SemanticIndex:
 class MedCPTReranker:
     def __init__(self):
         print(f"Loading reranker: {RERANK_MODEL}")
-        self.tokenizer = AutoTokenizer.from_pretrained(RERANK_MODEL)
-        self.model = AutoModelForSequenceClassification.from_pretrained(RERANK_MODEL)
+        _cache = os.environ.get("HF_HOME", None)
+        self.tokenizer = AutoTokenizer.from_pretrained(RERANK_MODEL, cache_dir=_cache)
+        self.model = AutoModelForSequenceClassification.from_pretrained(RERANK_MODEL, cache_dir=_cache)
         self.model.eval()
 
     def score_pairs(self, query: str, passages: list[str], batch_size: int = 8) -> np.ndarray:
@@ -263,6 +271,37 @@ class RRFRerankRetriever:
     def search_with_scores(self, query: str, k: int = 10) -> list[tuple[int, float]]:
         """Return (chunk_index, relevance_score) pairs; scores are min-max normalized."""
         return self._ranked_with_scores(query, k)
+
+    def search_with_metadata(self, query: str, k: int = 10) -> list[dict]:
+        """Return top-k chunk metadata including BM25, semantic, RRF, raw rerank and normalized scores."""
+        pool_idx = self.rrf.candidate_pool(query)
+        if not pool_idx:
+            return []
+        bm25_all = self.rrf.base.bm25.score_all(query)
+        sem_all = self.rrf.base.semantic_scores(query)
+        rrf_all = self.rrf.rrf_scores(query)
+
+        passages = [chunk_passage(self.chunks[i]) for i in pool_idx]
+        raw_scores = self.reranker.score_pairs(query, passages)
+        scores = raw_scores.copy()
+        for j, i in enumerate(pool_idx):
+            scores[j] *= section_multiplier(self.chunks[i])
+        order = np.argsort(-scores)
+        top = order[:k]
+        normed = minmax_norm(scores[top])
+
+        results = []
+        for j, i in enumerate(top):
+            idx = pool_idx[i]
+            results.append({
+                "chunk_index": idx,
+                "score": float(normed[j]),
+                "raw_score": float(raw_scores[i]),
+                "bm25_score": float(bm25_all[idx]),
+                "semantic_score": float(sem_all[idx]),
+                "rrf_score": float(rrf_all[idx]),
+            })
+        return results
 
 
 def eval_retriever(retriever, gold: list[dict]) -> dict:

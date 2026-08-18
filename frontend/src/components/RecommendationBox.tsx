@@ -1,0 +1,60 @@
+import React from 'react';
+import { ShieldCheck, AlertTriangle, Clock, Layers } from 'lucide-react';
+import { QueryResponse } from '../types';
+
+interface RecommendationBoxProps {
+  response: QueryResponse;
+}
+
+export const RecommendationBox: React.FC<RecommendationBoxProps> = ({ response }) => {
+  const isAnswered = response.answer_status === 'answered';
+  const isHighConfidence = response.confidence === 'high';
+
+  return (
+    <div className={`card recommendation-card ${isAnswered ? 'answered' : 'insufficient'}`}>
+      <div className="card-body">
+        <div className="rec-header">
+          <div className={`rec-status-pill ${isAnswered ? 'answered' : 'insufficient'}`}>
+            {isAnswered ? (
+              <>
+                <ShieldCheck size={16} />
+                <span>{isHighConfidence ? 'Guideline Answered · High Confidence' : 'Guideline Answered'}</span>
+              </>
+            ) : (
+              <>
+                <AlertTriangle size={16} />
+                <span>Insufficient Guideline Evidence · Safely Refused</span>
+              </>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.75rem', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Clock size={14} />
+              {response.latency_ms} ms
+            </span>
+          </div>
+        </div>
+
+        <div className="rec-text">
+          {response.recommendation}
+        </div>
+
+        {response.refusal_reason && (
+          <div className="rec-refusal-box">
+            <strong>Gating Notice:</strong> {response.refusal_reason}
+          </div>
+        )}
+
+        <div className="meta-stats-row">
+          <span><Layers size={13} style={{ display: 'inline', marginRight: 4 }} /> Pipeline: {response.pipeline_used}</span>
+          <span>Citations: {response.citations.length}</span>
+          <span>Reranked Candidates: {response.reranked_documents.length}</span>
+          {response._meta?.top_score !== undefined && response._meta?.top_score !== null && (
+            <span>Top Rerank Score: {Number(response._meta.top_score).toFixed(3)}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
