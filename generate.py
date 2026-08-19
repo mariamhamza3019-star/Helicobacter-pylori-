@@ -10,12 +10,24 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
+import random
 from difflib import SequenceMatcher
 from typing import Any, Callable
 
 import jsonschema
-from openai import OpenAI
+from openai import OpenAI, RateLimitError, APIConnectionError
 from pydantic import ValidationError
+
+DEFAULT_MAX_RETRIES = 2
+
+RATE_LIMIT_MAX_RETRIES = 3
+
+
+def _backoff_sleep(attempt: int) -> None:
+    """Exponential backoff with jitter: ~2s, ~4s, ~8s..."""
+    delay = (2 ** attempt) + random.uniform(0, 1)
+    time.sleep(delay)
 
 from grounding_system_prompt import build_system_prompt
 from schema import (
@@ -183,7 +195,7 @@ def generate_answer(
 ) -> dict:
     """
     Generate a grounded answer from retrieved chunks.
-
+ 
     Parameters
     ----------
     query : str
@@ -193,7 +205,7 @@ def generate_answer(
         source, topic. Optional ``score`` enables the pre-generation relevance guard.
     """
     metadata: dict[str, Any] = {"citation_warnings": [], "llm_called": False}
-
+ 
     if should_refuse_low_relevance(retrieved_chunks, relevance_threshold):
         top = _top_relevance_score(retrieved_chunks)
         if not retrieved_chunks:
@@ -208,11 +220,12 @@ def generate_answer(
         result = build_refusal_response(reason)
         result["_meta"] = metadata
         return result
-
+ 
     caller = call_model_fn or call_model
     last_error: Exception | None = None
     parsed: dict | None = None
-
+    rate_limit_attempts = 0
+ 
     for attempt in range(max_retries + 1):
         try:
             metadata["llm_called"] = True
@@ -225,7 +238,7 @@ def generate_answer(
                 excerpt_min_ratio=excerpt_min_ratio,
             )
             metadata["citation_warnings"] = warnings
-
+ 
             if response.answer_status == "answered" and not response.citations:
                 if warnings:
                     response = GenerationResponse(
@@ -248,15 +261,51 @@ def generate_answer(
                         citations=[],
                         refusal_reason="No valid citations were produced for the answer.",
                     )
-
+ 
             result = response_to_dict(response)
             result["_meta"] = metadata
             return result
+ 
+        except RateLimitError as exc:
+            # Groq free-tier TPM limit hit — back off and retry instead of
+            # crashing. This is an infrastructure hiccup, not a grounding
+            # failure, so it gets its own retry budget separate from
+            # max_retries (which is for malformed-JSON / schema failures).
+            last_error = exc
+            rate_limit_attempts += 1
+            metadata["rate_limited"] = True
+            if rate_limit_attempts <= RATE_LIMIT_MAX_RETRIES:
+                _backoff_sleep(rate_limit_attempts)
+                continue
+            break
+ 
+        except APIConnectionError as exc:
+            # Transient network issue — brief retry, no long backoff needed.
+            last_error = exc
+            rate_limit_attempts += 1
+            if rate_limit_attempts <= RATE_LIMIT_MAX_RETRIES:
+                time.sleep(1.5)
+                continue
+            break
+ 
         except (ValidationError, jsonschema.ValidationError, ValueError) as exc:
             last_error = exc
             if attempt >= max_retries:
                 break
-
-    raise RuntimeError(
-        f"Generation failed after {max_retries + 1} attempt(s): {last_error}"
-    ) from last_error
+ 
+    # Every retry path exhausted — fail SAFE instead of raising, so the
+    # FastAPI endpoint returns a normal refusal response (200) instead of
+    # crashing with a 500 mid-demo.
+    if isinstance(last_error, RateLimitError):
+        reason = (
+            "The system is temporarily busy (rate limit reached). "
+            "Please wait a few seconds and try again."
+        )
+    elif isinstance(last_error, APIConnectionError):
+        reason = "Could not reach the language model service. Please try again."
+    else:
+        reason = f"Generation failed after retries: {last_error}"
+ 
+    result = build_refusal_response(reason)
+    result["_meta"] = metadata
+    return result

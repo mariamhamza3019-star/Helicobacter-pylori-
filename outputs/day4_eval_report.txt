@@ -1,0 +1,19 @@
+========================================================================
+DAY 4 EVALUATION REPORT
+========================================================================
+In-scope questions tested:        8
+Out-of-domain questions tested:   5
+Ambiguous questions tested:        4
+
+Refusal correctness (out-of-domain): 100.0%
+Refusal correctness (ambiguous):     75.0%
+Correct answer/refuse (in-scope):    100.0%
+Citation groundedness (all):          100.0%
+Avg retrieval precision@5 (in-scope): 0.700
+Avg latency:                           17944 ms
+
+------------------------------------------------------------------------
+FAILURES (review these manually):
+------------------------------------------------------------------------
+- "How should this be managed if the first attempt doesn't work?"
+    expected_answered=False, got=True
