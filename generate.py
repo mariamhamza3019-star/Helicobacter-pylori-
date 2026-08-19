@@ -1,12 +1,12 @@
 """
 Grounded answer generation for the H. pylori clinical RAG pipeline.
-
+ 
 Accepts any list of retrieved chunks matching the retrieval schema (with optional
 ``score`` for relevance gating). Calls openai/gpt-oss-120b with structured JSON
 output, validates schema, and verifies citations against retrieved chunks.
 """
 from __future__ import annotations
-
+ 
 import json
 import os
 import re
@@ -14,21 +14,21 @@ import time
 import random
 from difflib import SequenceMatcher
 from typing import Any, Callable
-
+ 
 import jsonschema
 from openai import OpenAI, RateLimitError, APIConnectionError
 from pydantic import ValidationError
-
+ 
 DEFAULT_MAX_RETRIES = 2
-
+ 
 RATE_LIMIT_MAX_RETRIES = 3
-
-
+ 
+ 
 def _backoff_sleep(attempt: int) -> None:
     """Exponential backoff with jitter: ~2s, ~4s, ~8s..."""
     delay = (2 ** attempt) + random.uniform(0, 1)
     time.sleep(delay)
-
+ 
 from grounding_system_prompt import build_system_prompt
 from schema import (
     RESPONSE_JSON_SCHEMA,
@@ -36,21 +36,52 @@ from schema import (
     response_to_dict,
     validate_response,
 )
-
+ 
 DEFAULT_MODEL = "openai/gpt-oss-120b"
 DEFAULT_RELEVANCE_THRESHOLD = 0.35
 DEFAULT_EXCERPT_MIN_RATIO = 0.72
 DEFAULT_MAX_RETRIES = 2
-
+ 
 REFUSAL_LOW_RELEVANCE = (
     "No retrieved chunks met the minimum relevance threshold for this query."
 )
-
-
+ 
+ 
 def _normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().strip())
-
-
+ 
+ 
+# Sentence-initial imperative clinical verbs ("Take 500mg...", "Start therapy...")
+# and second-person directive phrasing ("you should...") — the model is meant
+# to describe what the guideline states, never instruct the reader to act.
+_DIRECTIVE_SENTENCE_START = re.compile(
+    r"(?:^|[.!?]\s+)(Take|Start|Administer|Prescribe|Discontinue|Begin|Stop|Give|Use)\b",
+    re.IGNORECASE,
+)
+_DIRECTIVE_PHRASES = re.compile(
+    r"\byou should\b|\byou must\b|\byou need to\b|\bi recommend you\b",
+    re.IGNORECASE,
+)
+ 
+ 
+def check_directive_language(text: str) -> list[str]:
+    """
+    Non-blocking tone guardrail. Flags phrasing that instructs the reader to
+    act (prescriptive) rather than describing what the guideline says
+    (descriptive). This is a transparency/telemetry layer, not a filter —
+    it never rewrites or rejects the answer, since a heuristic false
+    positive shouldn't silently break a correctly grounded response.
+    Findings are surfaced in _meta.tone_warnings for inspection.
+    """
+    warnings: list[str] = []
+    for match in _DIRECTIVE_SENTENCE_START.finditer(text):
+        verb = match.group(1)
+        warnings.append(f"Imperative sentence-start detected: \"{verb}...\"")
+    for match in _DIRECTIVE_PHRASES.finditer(text):
+        warnings.append(f"Directive phrase detected: \"{match.group(0)}\"")
+    return warnings
+ 
+ 
 def _excerpt_matches_chunk(excerpt: str, chunk_text: str, min_ratio: float) -> bool:
     excerpt_norm = _normalize_text(excerpt)
     chunk_norm = _normalize_text(chunk_text)
@@ -61,17 +92,17 @@ def _excerpt_matches_chunk(excerpt: str, chunk_text: str, min_ratio: float) -> b
     if len(excerpt_norm) >= 20 and excerpt_norm[:20] in chunk_norm:
         return True
     return SequenceMatcher(None, excerpt_norm, chunk_norm).ratio() >= min_ratio
-
-
+ 
+ 
 def _chunk_lookup(chunks: list[dict]) -> dict[str, dict]:
     return {c["chunk_id"]: c for c in chunks}
-
-
+ 
+ 
 def _top_relevance_score(chunks: list[dict]) -> float | None:
     scores = [c["score"] for c in chunks if c.get("score") is not None]
     return max(scores) if scores else None
-
-
+ 
+ 
 def should_refuse_low_relevance(
     chunks: list[dict],
     threshold: float = DEFAULT_RELEVANCE_THRESHOLD,
@@ -83,8 +114,8 @@ def should_refuse_low_relevance(
     if top_score is None:
         return False
     return top_score < threshold
-
-
+ 
+ 
 def build_refusal_response(reason: str) -> dict:
     response = GenerationResponse(
         answer_status="insufficient_context",
@@ -96,19 +127,28 @@ def build_refusal_response(reason: str) -> dict:
         refusal_reason=reason,
     )
     return response_to_dict(response)
-
-
-def assemble_messages(query: str, chunks: list[dict]) -> list[dict[str, str]]:
-    return [
-        {"role": "system", "content": build_system_prompt(chunks)},
-        {"role": "user", "content": query},
-    ]
-
-
+ 
+ 
+def assemble_messages(
+    query: str,
+    chunks: list[dict],
+    history: list[dict] | None = None,
+) -> list[dict[str, str]]:
+    messages = [{"role": "system", "content": build_system_prompt(chunks)}]
+    if history:
+        for turn in history:
+            role = turn.get("role")
+            content = (turn.get("content") or "").strip()
+            if role in ("user", "assistant") and content:
+                messages.append({"role": role, "content": content})
+    messages.append({"role": "user", "content": query})
+    return messages
+ 
+ 
 def validate_schema_raw(data: dict) -> None:
     jsonschema.validate(instance=data, schema=RESPONSE_JSON_SCHEMA)
-
-
+ 
+ 
 def verify_citations(
     response: GenerationResponse,
     chunks: list[dict],
@@ -121,11 +161,11 @@ def verify_citations(
     """
     if response.answer_status != "answered":
         return response, []
-
+ 
     lookup = _chunk_lookup(chunks)
     kept: list = []
     warnings: list[str] = []
-
+ 
     for cite in response.citations:
         chunk = lookup.get(cite.chunk_id)
         if chunk is None:
@@ -137,32 +177,33 @@ def verify_citations(
             )
             continue
         kept.append(cite)
-
+ 
     cleaned = response.model_copy(update={"citations": kept})
     return cleaned, warnings
-
-
+ 
+ 
 def _parse_model_content(content: str) -> dict:
     try:
         return json.loads(content)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Model returned non-JSON content: {exc}") from exc
-
-
+ 
+ 
 def call_model(
     query: str,
     chunks: list[dict],
     *,
     client: OpenAI | None = None,
     model: str | None = None,
+    history: list[dict] | None = None,
 ) -> dict:
     api_client = client or OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY") or os.environ.get("GENERATION_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL"),
     )
     model_name = model or os.environ.get("GENERATION_MODEL", DEFAULT_MODEL)
-    messages = assemble_messages(query, chunks)
-
+    messages = assemble_messages(query, chunks, history=history)
+ 
     completion = api_client.chat.completions.create(
         model=model_name,
         messages=messages,
@@ -175,13 +216,14 @@ def call_model(
             },
         },
         temperature=0.0,
+        reasoning_effort="low",
     )
     content = completion.choices[0].message.content
     if not content:
         raise ValueError("Model returned empty content")
     return _parse_model_content(content)
-
-
+ 
+ 
 def generate_answer(
     query: str,
     retrieved_chunks: list[dict],
@@ -192,6 +234,7 @@ def generate_answer(
     client: OpenAI | None = None,
     model: str | None = None,
     call_model_fn: Callable[..., dict] | None = None,
+    history: list[dict] | None = None,
 ) -> dict:
     """
     Generate a grounded answer from retrieved chunks.
@@ -229,7 +272,7 @@ def generate_answer(
     for attempt in range(max_retries + 1):
         try:
             metadata["llm_called"] = True
-            parsed = caller(query, retrieved_chunks, client=client, model=model)
+            parsed = caller(query, retrieved_chunks, client=client, model=model, history=history)
             validate_schema_raw(parsed)
             response = validate_response(parsed)
             response, warnings = verify_citations(
@@ -263,6 +306,12 @@ def generate_answer(
                     )
  
             result = response_to_dict(response)
+            if response.answer_status == "answered":
+                metadata["tone_warnings"] = check_directive_language(response.recommendation)
+            else:
+                metadata["tone_warnings"] = []
+            metadata["reasoning_effort"] = "low"
+            metadata["model"] = model or os.environ.get("GENERATION_MODEL", DEFAULT_MODEL)
             result["_meta"] = metadata
             return result
  
@@ -309,3 +358,4 @@ def generate_answer(
     result = build_refusal_response(reason)
     result["_meta"] = metadata
     return result
+ 

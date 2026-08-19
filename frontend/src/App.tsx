@@ -1,26 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { QuerySection } from './components/QuerySection';
 import { RecommendationBox } from './components/RecommendationBox';
-import { EvidenceSection } from './components/EvidenceSection';
-import { CitationsList } from './components/CitationsList';
+import { GroundedEvidence } from './components/GroundedEvidence';
+import { PipelineTrace } from './components/PipelineTrace';
 import { RerankedDocs } from './components/RerankedDocs';
 import { GoldWorkbench } from './components/GoldWorkbench';
-import { HealthStatus, QueryResponse } from './types';
-import { AlertCircle } from 'lucide-react';
+import { HealthStatus, QueryResponse, ChatMessage } from './types';
+import { AlertCircle, User } from 'lucide-react';
+
+interface ChatTurn {
+  id: number;
+  query: string;
+  response: QueryResponse | null;
+  error: string | null;
+  loading: boolean;
+}
 
 export const App: React.FC = () => {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [activeTab, setActiveTab] = useState<'search' | 'gold'>('search');
-  const [query, setQuery] = useState<string>(
-    'What is the preferred first-line treatment for treatment-naive H. pylori when susceptibility is unknown?'
-  );
+  const [query, setQuery] = useState<string>('');
   const [topK, setTopK] = useState<number>(5);
   const [pipeline, setPipeline] = useState<string>('rrf_rerank');
   const [relevanceThreshold, setRelevanceThreshold] = useState<number>(0.35);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [response, setResponse] = useState<QueryResponse | null>(null);
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const nextId = useRef(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Initial health check
@@ -32,11 +38,28 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleSearch = async () => {
-    if (!query.trim()) return;
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+  }, [turns]);
 
-    setLoading(true);
-    setError(null);
+  const loading = turns.some((t) => t.loading);
+
+  const handleSearch = async () => {
+    const q = query.trim();
+    if (!q || loading) return;
+
+    const id = nextId.current++;
+    // Simplified scope: only the immediately previous completed turn is
+    // used as context for a follow-up, not the full growing conversation.
+    const priorTurns = turns.filter((t) => t.response).slice(-1);
+
+    setTurns((prev) => [...prev, { id, query: q, response: null, error: null, loading: true }]);
+    setQuery('');
+
+    const history: ChatMessage[] = priorTurns.flatMap((t) => [
+      { role: 'user', content: t.query },
+      { role: 'assistant', content: t.response!.recommendation },
+    ]);
 
     try {
       const res = await fetch('/api/query', {
@@ -45,11 +68,12 @@ export const App: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: query.trim(),
+          query: q,
           top_k: topK,
           pipeline,
           relevance_threshold: relevanceThreshold,
           use_llm: true,
+          history,
         }),
       });
 
@@ -59,12 +83,20 @@ export const App: React.FC = () => {
       }
 
       const data: QueryResponse = await res.json();
-      setResponse(data);
+      setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, response: data, loading: false } : t)));
     } catch (err: any) {
       console.error('Query error:', err);
-      setError(err.message || 'Failed to retrieve guidelines. Ensure the backend server is running.');
-    } finally {
-      setLoading(false);
+      setTurns((prev) =>
+        prev.map((t) =>
+          t.id === id
+            ? {
+                ...t,
+                error: err.message || 'Failed to retrieve guidelines. Ensure the backend server is running.',
+                loading: false,
+              }
+            : t
+        )
+      );
     }
   };
 
@@ -75,15 +107,66 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      <Header
-        health={health}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
+      <Header health={health} activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <main className="main-content">
-        {activeTab === 'search' && (
-          <>
+      {activeTab === 'search' && (
+        <div className="chat-layout">
+          <div className="chat-scroll-area" ref={scrollRef}>
+            <div className="chat-scroll-inner">
+              {turns.length === 0 && (
+                <div className="chat-empty-state">
+                  Ask a clinical question about H. pylori diagnosis, therapy, or management to get started.
+                  Follow-up questions ("what about in children?") will use the conversation so far.
+                </div>
+              )}
+
+              {turns.map((turn) => (
+                <div key={turn.id} className="chat-turn">
+                  <div className="chat-user-message">
+                    <User size={15} />
+                    <span>{turn.query}</span>
+                  </div>
+
+                  {turn.loading && (
+                    <div className="card">
+                      <div
+                        className="card-body"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#6B7280' }}
+                      >
+                        <span className="spinner"></span>
+                        Retrieving &amp; reranking guideline evidence...
+                      </div>
+                    </div>
+                  )}
+
+                  {turn.error && (
+                    <div className="card" style={{ borderColor: '#C62828', background: '#ffebee' }}>
+                      <div
+                        className="card-body"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#C62828' }}
+                      >
+                        <AlertCircle size={20} />
+                        <div>
+                          <strong>Query Error:</strong> {turn.error}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {turn.response && (
+                    <>
+                      <RecommendationBox response={turn.response} />
+                      <PipelineTrace response={turn.response} />
+                      <GroundedEvidence citations={turn.response.citations} />
+                      <RerankedDocs documents={turn.response.reranked_documents} />
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="chat-input-bar">
             <QuerySection
               query={query}
               setQuery={setQuery}
@@ -96,33 +179,15 @@ export const App: React.FC = () => {
               relevanceThreshold={relevanceThreshold}
               setRelevanceThreshold={setRelevanceThreshold}
             />
+          </div>
+        </div>
+      )}
 
-            {error && (
-              <div className="card" style={{ borderColor: '#C62828', background: '#ffebee' }}>
-                <div className="card-body" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#C62828' }}>
-                  <AlertCircle size={20} />
-                  <div>
-                    <strong>Query Error:</strong> {error}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {response && (
-              <>
-                <RecommendationBox response={response} />
-                <EvidenceSection evidence={response.evidence} citations={response.citations} />
-                <CitationsList citations={response.citations} />
-                <RerankedDocs documents={response.reranked_documents} />
-              </>
-            )}
-          </>
-        )}
-
-        {activeTab === 'gold' && (
+      {activeTab === 'gold' && (
+        <main className="main-content">
           <GoldWorkbench onSelectQuestion={handleSelectGoldQuestion} />
-        )}
-      </main>
+        </main>
+      )}
     </div>
   );
 };

@@ -44,17 +44,88 @@ button, input, textarea, select {
 
 /* Layout */
 .app-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .main-content {
   flex: 1;
+  overflow-y: auto;
   max-width: 1240px;
   width: 100%;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 3rem 1.25rem;
+}
+
+/* Chat layout (search tab) */
+.chat-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.chat-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 1.5rem;
+}
+
+.chat-scroll-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 1rem;
+}
+
+.chat-empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 3.5rem 1rem;
+  font-size: 0.95rem;
+}
+
+.chat-turn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.chat-turn:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.chat-user-message {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary-navy);
+  color: #ffffff;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  border-bottom-right-radius: 2px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  max-width: 80%;
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-input-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-page);
+  padding: 1rem 0 1.5rem 0;
+  border-top: 1px solid var(--border-subtle);
 }
 
 /* Header */
@@ -421,6 +492,59 @@ button, input, textarea, select {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.evidence-source-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.evidence-source-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--primary-navy);
+  background: #eef2f7;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Pipeline & Safety Trace */
+.trace-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.trace-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.trace-value {
+  color: var(--text-dark);
+  font-weight: 600;
+  text-align: right;
+}
+
+.trace-warning-list {
+  background: #fff8ec;
+  border: 1px solid #f3d9a4;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.76rem;
+  color: #92620a;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 /* Citations grid */

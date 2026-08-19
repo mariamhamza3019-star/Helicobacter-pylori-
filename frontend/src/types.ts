@@ -27,6 +27,11 @@ export interface RerankedDocument {
   content_type?: string;
 }
 
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export interface QueryResponse {
   recommendation: string;
   evidence: string[];
@@ -41,6 +46,9 @@ export interface QueryResponse {
     llm_called?: boolean;
     citation_warnings?: string[];
     top_score?: number;
+    tone_warnings?: string[];
+    reasoning_effort?: string;
+    model?: string;
   };
 }
 
