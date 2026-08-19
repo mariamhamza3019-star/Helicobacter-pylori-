@@ -1,5 +1,5 @@
-import React from 'react';
-import { Quote, FileText } from 'lucide-react';
+import React, { useState } from 'react';
+import { Quote, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { Citation } from '../types';
 
 interface GroundedEvidenceProps {
@@ -39,6 +39,8 @@ function groupByExcerpt(citations: Citation[]): EvidenceGroup[] {
 }
 
 export const GroundedEvidence: React.FC<GroundedEvidenceProps> = ({ citations }) => {
+  const [open, setOpen] = useState(false);
+
   if (!citations || citations.length === 0) {
     return null;
   }
@@ -47,35 +49,53 @@ export const GroundedEvidence: React.FC<GroundedEvidenceProps> = ({ citations })
 
   return (
     <div className="card">
-      <div className="card-header">
-        <h3>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: '0.85rem 1.1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '0.9rem', color: '#1E3A5F' }}>
           <Quote size={17} style={{ color: '#2F6690' }} />
           Evidence &amp; Citations
-        </h3>
-        <span style={{ fontSize: '0.78rem', color: '#6B7280', fontWeight: 600 }}>
-          {groups.length} Verbatim Passage{groups.length === 1 ? '' : 's'} · {citations.length} Grounded Reference{citations.length === 1 ? '' : 's'}
         </span>
-      </div>
-      <div className="card-body">
-        {groups.map((group, idx) => (
-          <div key={idx} className="evidence-card">
-            <div className="evidence-text">"{group.excerpt}"</div>
-            <div className="evidence-source-list">
-              {group.sources.map((src, sIdx) => (
-                <div key={sIdx} className="evidence-source-badge">
-                  <FileText size={12} />
-                  <span>
-                    {src.section}
-                    {src.subsection ? ` / ${src.subsection}` : ''}
-                    {src.page ? ` · Page ${src.page}` : ''}
-                    {src.chunk_id ? ` · (${src.chunk_id})` : ''}
-                  </span>
-                </div>
-              ))}
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <span style={{ fontSize: '0.78rem', color: '#6B7280', fontWeight: 600 }}>
+            {groups.length} Verbatim Passage{groups.length === 1 ? '' : 's'} · {citations.length} Grounded Reference{citations.length === 1 ? '' : 's'}
+          </span>
+          {open ? <ChevronUp size={16} color="#6B7280" /> : <ChevronDown size={16} color="#6B7280" />}
+        </span>
+      </button>
+
+      {open && (
+        <div className="card-body" style={{ paddingTop: 0 }}>
+          {groups.map((group, idx) => (
+            <div key={idx} className="evidence-card">
+              <div className="evidence-text">"{group.excerpt}"</div>
+              <div className="evidence-source-list">
+                {group.sources.map((src, sIdx) => (
+                  <div key={sIdx} className="evidence-source-badge">
+                    <FileText size={12} />
+                    <span>
+                      {src.section}
+                      {src.subsection ? ` / ${src.subsection}` : ''}
+                      {src.page ? ` · Page ${src.page}` : ''}
+                      {src.chunk_id ? ` · (${src.chunk_id})` : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

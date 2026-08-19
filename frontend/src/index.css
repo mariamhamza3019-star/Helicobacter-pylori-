@@ -360,6 +360,49 @@ button, input, textarea, select {
   border-color: var(--secondary-slate);
 }
 
+/* Follow-up suggestion chips */
+.followup-suggestions {
+  margin-top: 0.4rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.followup-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.followup-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.followup-chip {
+  background: #eaf2fb;
+  border: 1px solid #bcd6ef;
+  color: var(--primary-navy);
+  padding: 0.32rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.followup-chip:hover {
+  background: #d7e8f8;
+  border-color: var(--primary-navy);
+}
+
 /* Pipeline settings accordion */
 .settings-bar {
   margin-top: 0.85rem;

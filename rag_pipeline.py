@@ -1,8 +1,8 @@
 """
 Clinical RAG pipeline: BM25 + dense FAISS retrieval → RRF hybrid → MedCPT cross-encoder rerank → structured response.
- 
+
 Importable by FastAPI backend, Streamlit, and retrieval-evaluation scripts.
- 
+
 Reranker choice — MedCPT Cross-Encoder (ncbi/MedCPT-Cross-Encoder):
   + Trained on PubMed query–passage pairs; strong on biomedical/clinical text.
   + Already pulled in via ``transformers`` / ``torch`` (same stack as BioBERT embeddings).
@@ -10,12 +10,12 @@ Reranker choice — MedCPT Cross-Encoder (ncbi/MedCPT-Cross-Encoder):
   + Actual reranker scores are computed and preserved with source metadata.
 """
 from __future__ import annotations
- 
+
 import re
 from typing import Any, Callable
- 
+
 import numpy as np
- 
+
 from generate import (
     DEFAULT_RELEVANCE_THRESHOLD,
     build_refusal_response,
@@ -30,7 +30,7 @@ from hybrid_search import (
     minmax_norm,
     section_multiplier,
 )
- 
+
 DENSE_POOL_SIZE = 25
 CHUNK_SCHEMA_KEYS = (
     "chunk_id",
@@ -41,32 +41,32 @@ CHUNK_SCHEMA_KEYS = (
     "source",
     "topic",
 )
- 
- 
+
+
 class DenseRetriever:
     """FAISS + BioBERT dense retrieval only (baseline, no reranker)."""
- 
+
     name = "dense (FAISS + BioBERT)"
- 
+
     def __init__(self, base: SemanticIndex):
         self.base = base
         self.chunks = base.chunks
- 
+
     def search(self, query: str, k: int = 10) -> list[int]:
         sem = self.base.semantic_scores(query)
         return list(np.argsort(-sem)[:k])
- 
- 
+
+
 class DenseRerankRetriever:
     """Top dense pool → MedCPT cross-encoder rerank; preserves full chunk metadata."""
- 
+
     name = "dense + MedCPT rerank"
- 
+
     def __init__(self, base: SemanticIndex, reranker: MedCPTReranker):
         self.dense = DenseRetriever(base)
         self.reranker = reranker
         self.chunks = base.chunks
- 
+
     def _ranked_with_scores(self, query: str, k: int) -> list[tuple[int, float]]:
         pool_idx = self.dense.search(query, k=DENSE_POOL_SIZE)
         if not pool_idx:
@@ -79,13 +79,13 @@ class DenseRerankRetriever:
         top = order[:k]
         normed = minmax_norm(scores[top])
         return [(pool_idx[i], float(normed[j])) for j, i in enumerate(top)]
- 
+
     def search(self, query: str, k: int = 10) -> list[int]:
         return [i for i, _ in self._ranked_with_scores(query, k)]
- 
+
     def search_with_scores(self, query: str, k: int = 10) -> list[tuple[int, float]]:
         return self._ranked_with_scores(query, k)
- 
+
     def search_with_metadata(self, query: str, k: int = 10) -> list[dict]:
         pool_idx = self.dense.search(query, k=DENSE_POOL_SIZE)
         if not pool_idx:
@@ -99,7 +99,7 @@ class DenseRerankRetriever:
         order = np.argsort(-scores)
         top = order[:k]
         normed = minmax_norm(scores[top])
- 
+
         results = []
         for j, i in enumerate(top):
             idx = pool_idx[i]
@@ -110,8 +110,8 @@ class DenseRerankRetriever:
                 "semantic_score": float(sem_all[idx]),
             })
         return results
- 
- 
+
+
 def chunk_from_store(c: dict, meta: dict | None = None, score: float | None = None) -> dict:
     """Map stored chunk JSON to pipeline schema; all core fields & scores preserved."""
     doc_title = (
@@ -138,8 +138,8 @@ def chunk_from_store(c: dict, meta: dict | None = None, score: float | None = No
     elif score is not None:
         out["score"] = score
     return out
- 
- 
+
+
 def retrieve_ranked(
     retriever: Any,
     query: str,
@@ -155,8 +155,8 @@ def retrieve_ranked(
         return [chunk_from_store(all_chunks[i], score=s) for i, s in ranked]
     indices = retriever.search(query, k=k)
     return [chunk_from_store(all_chunks[i]) for i in indices]
- 
- 
+
+
 def _first_sentence(text: str, max_len: int = 320) -> str:
     text = text.strip()
     if not text:
@@ -166,19 +166,19 @@ def _first_sentence(text: str, max_len: int = 320) -> str:
     if len(sentence) > max_len:
         return sentence[: max_len - 3].rstrip() + "..."
     return sentence
- 
- 
+
+
 def _top_score(chunks: list[dict]) -> float | None:
     scores = [c["score"] for c in chunks if c.get("score") is not None]
     return max(scores) if scores else None
- 
- 
+
+
 def _confidence_label(chunks: list[dict], threshold: float) -> str:
     if should_refuse_low_relevance(chunks, threshold):
         return "low"
     return "high"
- 
- 
+
+
 def _format_reranked_documents(chunks: list[dict]) -> list[dict]:
     """Format candidate chunks as clean reranked documents with actual reranker scores."""
     reranked = []
@@ -194,7 +194,7 @@ def _format_reranked_documents(chunks: list[dict]) -> list[dict]:
             relevance = round(float(score_val), 4)
         else:
             relevance = None
- 
+
         doc_item = {
             "rank": idx,
             "chunk_id": c.get("chunk_id", ""),
@@ -215,8 +215,8 @@ def _format_reranked_documents(chunks: list[dict]) -> list[dict]:
         }
         reranked.append(doc_item)
     return reranked
- 
- 
+
+
 def generation_to_structured(generated: dict, chunks: list[dict]) -> dict:
     """
     Convert internal GenerationResponse dict to public shape:
@@ -225,7 +225,7 @@ def generation_to_structured(generated: dict, chunks: list[dict]) -> dict:
     lookup = {c["chunk_id"]: c for c in chunks}
     excerpts: list[str] = []
     citations: list[dict] = []
- 
+
     for cite in generated.get("citations") or []:
         excerpt_text = cite.get("excerpt", "").strip()
         if excerpt_text:
@@ -248,7 +248,7 @@ def generation_to_structured(generated: dict, chunks: list[dict]) -> dict:
                 "excerpt": excerpt_text,
             }
         )
- 
+
     confidence = "high" if generated.get("answer_status") == "answered" else "low"
     return {
         "recommendation": generated.get("recommendation", ""),
@@ -260,10 +260,11 @@ def generation_to_structured(generated: dict, chunks: list[dict]) -> dict:
         "confidence": confidence,
         "answer_status": generated.get("answer_status", "answered"),
         "refusal_reason": generated.get("refusal_reason"),
+        "suggested_followups": generated.get("suggested_followups", []),
         "_meta": generated.get("_meta", {}),
     }
- 
- 
+
+
 def extractive_structured_response(
     chunks: list[dict],
     *,
@@ -289,7 +290,7 @@ def extractive_structured_response(
             "refusal_reason": refusal_reason or "No chunks retrieved.",
             "_meta": {"llm_called": False},
         }
- 
+
     if low_confidence:
         recommendation = (
             "The retrieved guideline excerpts do not provide enough relevant "
@@ -303,7 +304,7 @@ def extractive_structured_response(
             + _first_sentence(chunks[0]["text"])
         )
         status = "answered"
- 
+
     top = chunks[:max_excerpts] if not low_confidence else []
     excerpts = [c["text"][:excerpt_chars].strip() for c in top]
     citations = [
@@ -318,7 +319,7 @@ def extractive_structured_response(
         }
         for c in top
     ]
- 
+
     return {
         "recommendation": recommendation,
         "excerpt": excerpts,
@@ -331,8 +332,8 @@ def extractive_structured_response(
         "refusal_reason": refusal_reason,
         "_meta": {"llm_called": False, "top_score": _top_score(chunks)},
     }
- 
- 
+
+
 def _build_retrieval_query(
     query: str,
     history: list[dict] | None,
@@ -355,8 +356,8 @@ def _build_retrieval_query(
     if not recent_user_turns:
         return query
     return " ".join(recent_user_turns) + " " + query
- 
- 
+
+
 def run_clinical_rag(
     query: str,
     all_chunks: list[dict],
@@ -370,7 +371,7 @@ def run_clinical_rag(
 ) -> dict:
     """
     End-to-end: BM25 + dense FAISS → hybrid RRF pool → MedCPT rerank → structured response.
- 
+
     Returns JSON-serializable dict with keys:
       recommendation, evidence/excerpt, citations/citation, reranked_documents,
       confidence, answer_status, refusal_reason, _meta.
@@ -378,7 +379,7 @@ def run_clinical_rag(
     retrieval_query = _build_retrieval_query(query, history)
     ranked = retrieve_ranked(retriever, retrieval_query, k, all_chunks)
     low = _confidence_label(ranked, relevance_threshold)
- 
+
     if low == "low":
         top = _top_score(ranked)
         if not ranked:
@@ -394,17 +395,17 @@ def run_clinical_rag(
             generated["_meta"] = {"llm_called": False, "top_score": top}
             return generation_to_structured(generated, ranked)
         return extractive_structured_response(ranked, low_confidence=True, refusal_reason=reason)
- 
+
     if use_llm:
         try:
             generated = (generate_fn or generate_answer)(query, ranked, history=history)
             return generation_to_structured(generated, ranked)
         except RuntimeError:
             pass
- 
+
     return extractive_structured_response(ranked, low_confidence=False)
- 
- 
+
+
 def ordering_changed(dense_indices: list[int], rerank_indices: list[int]) -> bool:
     """True when reranking changed rank order (not just relabeled scores)."""
     return dense_indices != rerank_indices

@@ -155,10 +155,14 @@ export const App: React.FC = () => {
 
                   {turn.response && (
                     <>
-                      <RecommendationBox response={turn.response} />
+                      <RecommendationBox response={turn.response} onSelectFollowup={(q) => setQuery(q)} />
                       <PipelineTrace response={turn.response} />
-                      <GroundedEvidence citations={turn.response.citations} />
-                      <RerankedDocs documents={turn.response.reranked_documents} />
+                      {turn.response.answer_status === 'answered' && (
+                        <>
+                          <GroundedEvidence citations={turn.response.citations} />
+                          <RerankedDocs documents={turn.response.reranked_documents} />
+                        </>
+                      )}
                     </>
                   )}
                 </div>

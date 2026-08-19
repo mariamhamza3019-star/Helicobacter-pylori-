@@ -1,12 +1,12 @@
 """
 Grounded answer generation for the H. pylori clinical RAG pipeline.
- 
+
 Accepts any list of retrieved chunks matching the retrieval schema (with optional
 ``score`` for relevance gating). Calls openai/gpt-oss-120b with structured JSON
 output, validates schema, and verifies citations against retrieved chunks.
 """
 from __future__ import annotations
- 
+
 import json
 import os
 import re
@@ -14,21 +14,21 @@ import time
 import random
 from difflib import SequenceMatcher
 from typing import Any, Callable
- 
+
 import jsonschema
 from openai import OpenAI, RateLimitError, APIConnectionError
 from pydantic import ValidationError
- 
+
 DEFAULT_MAX_RETRIES = 2
- 
+
 RATE_LIMIT_MAX_RETRIES = 3
- 
- 
+
+
 def _backoff_sleep(attempt: int) -> None:
     """Exponential backoff with jitter: ~2s, ~4s, ~8s..."""
     delay = (2 ** attempt) + random.uniform(0, 1)
     time.sleep(delay)
- 
+
 from grounding_system_prompt import build_system_prompt
 from schema import (
     RESPONSE_JSON_SCHEMA,
@@ -36,21 +36,21 @@ from schema import (
     response_to_dict,
     validate_response,
 )
- 
+
 DEFAULT_MODEL = "openai/gpt-oss-120b"
 DEFAULT_RELEVANCE_THRESHOLD = 0.35
 DEFAULT_EXCERPT_MIN_RATIO = 0.72
 DEFAULT_MAX_RETRIES = 2
- 
+
 REFUSAL_LOW_RELEVANCE = (
     "No retrieved chunks met the minimum relevance threshold for this query."
 )
- 
- 
+
+
 def _normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().strip())
- 
- 
+
+
 # Sentence-initial imperative clinical verbs ("Take 500mg...", "Start therapy...")
 # and second-person directive phrasing ("you should...") — the model is meant
 # to describe what the guideline states, never instruct the reader to act.
@@ -62,8 +62,8 @@ _DIRECTIVE_PHRASES = re.compile(
     r"\byou should\b|\byou must\b|\byou need to\b|\bi recommend you\b",
     re.IGNORECASE,
 )
- 
- 
+
+
 def check_directive_language(text: str) -> list[str]:
     """
     Non-blocking tone guardrail. Flags phrasing that instructs the reader to
@@ -80,8 +80,8 @@ def check_directive_language(text: str) -> list[str]:
     for match in _DIRECTIVE_PHRASES.finditer(text):
         warnings.append(f"Directive phrase detected: \"{match.group(0)}\"")
     return warnings
- 
- 
+
+
 def _excerpt_matches_chunk(excerpt: str, chunk_text: str, min_ratio: float) -> bool:
     excerpt_norm = _normalize_text(excerpt)
     chunk_norm = _normalize_text(chunk_text)
@@ -91,18 +91,32 @@ def _excerpt_matches_chunk(excerpt: str, chunk_text: str, min_ratio: float) -> b
         return True
     if len(excerpt_norm) >= 20 and excerpt_norm[:20] in chunk_norm:
         return True
-    return SequenceMatcher(None, excerpt_norm, chunk_norm).ratio() >= min_ratio
- 
- 
+
+    # Below this point the excerpt is not a verbatim substring (the model
+    # lightly reworded it) — measure how much of the EXCERPT is covered by
+    # matching material in the chunk, rather than a plain SequenceMatcher
+    # .ratio(), which divides by (len(excerpt) + len(chunk)) combined. That
+    # symmetric ratio unfairly fails a short, legitimately-grounded excerpt
+    # pulled from a much longer chunk — e.g. a 90-char excerpt against a
+    # 600-char chunk scores ~0.10 even when every word of the excerpt
+    # appears in the chunk, because the chunk's extra length dilutes the
+    # ratio. What we actually want to know is "how much of the excerpt
+    # itself is grounded," not "how similar are the two texts overall."
+    matcher = SequenceMatcher(None, excerpt_norm, chunk_norm)
+    total_matched = sum(block.size for block in matcher.get_matching_blocks())
+    coverage = total_matched / len(excerpt_norm)
+    return coverage >= min_ratio
+
+
 def _chunk_lookup(chunks: list[dict]) -> dict[str, dict]:
     return {c["chunk_id"]: c for c in chunks}
- 
- 
+
+
 def _top_relevance_score(chunks: list[dict]) -> float | None:
     scores = [c["score"] for c in chunks if c.get("score") is not None]
     return max(scores) if scores else None
- 
- 
+
+
 def should_refuse_low_relevance(
     chunks: list[dict],
     threshold: float = DEFAULT_RELEVANCE_THRESHOLD,
@@ -114,8 +128,8 @@ def should_refuse_low_relevance(
     if top_score is None:
         return False
     return top_score < threshold
- 
- 
+
+
 def build_refusal_response(reason: str) -> dict:
     response = GenerationResponse(
         answer_status="insufficient_context",
@@ -127,8 +141,8 @@ def build_refusal_response(reason: str) -> dict:
         refusal_reason=reason,
     )
     return response_to_dict(response)
- 
- 
+
+
 def assemble_messages(
     query: str,
     chunks: list[dict],
@@ -143,12 +157,12 @@ def assemble_messages(
                 messages.append({"role": role, "content": content})
     messages.append({"role": "user", "content": query})
     return messages
- 
- 
+
+
 def validate_schema_raw(data: dict) -> None:
     jsonschema.validate(instance=data, schema=RESPONSE_JSON_SCHEMA)
- 
- 
+
+
 def verify_citations(
     response: GenerationResponse,
     chunks: list[dict],
@@ -161,34 +175,36 @@ def verify_citations(
     """
     if response.answer_status != "answered":
         return response, []
- 
+
     lookup = _chunk_lookup(chunks)
     kept: list = []
     warnings: list[str] = []
- 
+
     for cite in response.citations:
         chunk = lookup.get(cite.chunk_id)
         if chunk is None:
             warnings.append(f"Stripped citation with unknown chunk_id: {cite.chunk_id}")
             continue
         if not _excerpt_matches_chunk(cite.excerpt, chunk.get("text", ""), excerpt_min_ratio):
+            preview = cite.excerpt[:160] + ("..." if len(cite.excerpt) > 160 else "")
             warnings.append(
-                f"Stripped citation {cite.chunk_id}: excerpt not grounded in chunk text"
+                f"Stripped citation {cite.chunk_id}: excerpt not grounded in chunk text "
+                f"— model excerpt was: \"{preview}\""
             )
             continue
         kept.append(cite)
- 
+
     cleaned = response.model_copy(update={"citations": kept})
     return cleaned, warnings
- 
- 
+
+
 def _parse_model_content(content: str) -> dict:
     try:
         return json.loads(content)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Model returned non-JSON content: {exc}") from exc
- 
- 
+
+
 def call_model(
     query: str,
     chunks: list[dict],
@@ -203,7 +219,7 @@ def call_model(
     )
     model_name = model or os.environ.get("GENERATION_MODEL", DEFAULT_MODEL)
     messages = assemble_messages(query, chunks, history=history)
- 
+
     completion = api_client.chat.completions.create(
         model=model_name,
         messages=messages,
@@ -222,8 +238,8 @@ def call_model(
     if not content:
         raise ValueError("Model returned empty content")
     return _parse_model_content(content)
- 
- 
+
+
 def generate_answer(
     query: str,
     retrieved_chunks: list[dict],
@@ -283,6 +299,15 @@ def generate_answer(
             metadata["citation_warnings"] = warnings
  
             if response.answer_status == "answered" and not response.citations:
+                # Verification stripped every citation the model produced.
+                # Give it another attempt (same budget as malformed-JSON
+                # retries) before refusing outright — a single imperfect
+                # excerpt shouldn't sink an otherwise well-grounded answer.
+                if attempt < max_retries:
+                    last_error = ValueError(
+                        "All citations failed grounding verification; retrying."
+                    )
+                    continue
                 if warnings:
                     response = GenerationResponse(
                         answer_status="insufficient_context",
@@ -358,4 +383,3 @@ def generate_answer(
     result = build_refusal_response(reason)
     result["_meta"] = metadata
     return result
- 

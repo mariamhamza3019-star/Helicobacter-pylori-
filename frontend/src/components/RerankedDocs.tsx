@@ -8,6 +8,7 @@ interface RerankedDocsProps {
 
 export const RerankedDocs: React.FC<RerankedDocsProps> = ({ documents }) => {
   const [expandedChunkId, setExpandedChunkId] = useState<string | null>(null);
+  const [sectionOpen, setSectionOpen] = useState(false);
 
   if (!documents || documents.length === 0) {
     return null;
@@ -19,16 +20,32 @@ export const RerankedDocs: React.FC<RerankedDocsProps> = ({ documents }) => {
 
   return (
     <div className="card">
-      <div className="card-header">
-        <h3>
+      <button
+        onClick={() => setSectionOpen(!sectionOpen)}
+        style={{
+          width: '100%',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: '0.85rem 1.1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '0.9rem', color: '#1E3A5F' }}>
           <Layers size={17} style={{ color: '#1E3A5F' }} />
           Reranked Documents
-        </h3>
-        <span style={{ fontSize: '0.78rem', color: '#6B7280', fontWeight: 600 }}>
-          Top {documents.length} Candidate Chunks
         </span>
-      </div>
-      <div className="card-body">
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <span style={{ fontSize: '0.78rem', color: '#6B7280', fontWeight: 600 }}>
+            Top {documents.length} Candidate Chunks
+          </span>
+          {sectionOpen ? <ChevronUp size={16} color="#6B7280" /> : <ChevronDown size={16} color="#6B7280" />}
+        </span>
+      </button>
+      {sectionOpen && (
+      <div className="card-body" style={{ paddingTop: 0 }}>
         <div className="rerank-list">
           {documents.map((doc) => {
             const isExpanded = expandedChunkId === doc.chunk_id;
@@ -131,6 +148,7 @@ export const RerankedDocs: React.FC<RerankedDocsProps> = ({ documents }) => {
           })}
         </div>
       </div>
+      )}
     </div>
   );
 };
