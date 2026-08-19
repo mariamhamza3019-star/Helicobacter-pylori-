@@ -24,12 +24,12 @@ try:
 except Exception:
     pass
 
-OUT = "data/processed/inspect.txt"
+OUT = "../inspection/inspect.txt"
 
 
 def find_pdf():
     """Auto-locate the guideline PDF so a wrong path can't fail the run."""
-    for pat in ("data/raw/*.pdf", "data/*.pdf", "*.pdf", "**/*.pdf"):
+    for pat in ("../data/raw/*.pdf", "../data/*.pdf", "*.pdf", "**/*.pdf"):
         hits = sorted(glob.glob(pat, recursive=True))
         if hits:
             return hits[0]

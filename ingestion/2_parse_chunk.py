@@ -35,7 +35,7 @@ except Exception:
 
 def find_pdf():
     """Auto-locate the guideline PDF so a wrong path can't fail the run."""
-    for pat in ("data/raw/*.pdf", "data/*.pdf", "*.pdf", "**/*.pdf"):
+    for pat in ("../data/raw/*.pdf", "../data/*.pdf", "*.pdf", "**/*.pdf"):
         hits = sorted(glob.glob(pat, recursive=True))
         if hits:
             return hits[0]
@@ -43,8 +43,8 @@ def find_pdf():
 
 
 PDF_PATH = find_pdf()
-OUT_CHUNKS = "data/processed/acg_chunks.json"
-OUT_SECTIONS = "data/processed/acg_sections.json"
+OUT_CHUNKS = "../data/processed/acg_chunks.json"
+OUT_SECTIONS = "../data/processed/acg_sections.json"
 
 CHUNK_TOKENS = 400      # embedding models truncate at 512 — never exceed it
 OVERLAP_TOKENS = 60     # 15%

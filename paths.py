@@ -6,23 +6,37 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
-# Layer 1 — ingestion (rename "AI project" → ingestion when the folder isn't locked)
-INGESTION = ROOT / "ingestion" if (ROOT / "ingestion").is_dir() else ROOT / "AI project"
+# Layer 1 — ingestion scripts
+INGESTION = ROOT / "ingestion"
 
-PDF_DIR = INGESTION / "data" / "raw"
-PROCESSED = INGESTION / "data" / "processed"
+# Data — raw PDF + processed JSON artifacts
+DATA = ROOT / "data"
+PDF_DIR = DATA / "raw"
+PROCESSED = DATA / "processed"
 CHUNKS_JSON = PROCESSED / "acg_chunks.json"
 SECTIONS_JSON = PROCESSED / "acg_sections.json"
-EVAL_REPORT = PROCESSED / "eval_report.txt"
-INSPECT_TXT = PROCESSED / "inspect.txt"
-GOLD_QUESTIONS = INGESTION / "gold_questions.json"
+GOLD_QUESTIONS = PROCESSED / "gold_questions.json"
 
-# Layer 1 — embeddings & Layer 2 — retrieval
-OUTPUTS = ROOT / "outputs"
-EMBEDDINGS_JSON = OUTPUTS / "chunks_with_embeddings.json"
-FAISS_INDEX = OUTPUTS / "h_pylori_faiss.index"
-METADATA_JSON = OUTPUTS / "h_pylori_metadata.json"
-RETRIEVAL_CSV = OUTPUTS / "retrieval_results.csv"
-HYBRID_REPORT = OUTPUTS / "hybrid_search_report.txt"
+# Vector DB — FAISS index + its metadata + the embeddings that feed it
+# (binary/data artifacts, kept separate from human-readable reports)
+VECTOR_DB = ROOT / "vectorDB"
+FAISS_INDEX = VECTOR_DB / "h_pylori_faiss.index"
+METADATA_JSON = VECTOR_DB / "h_pylori_metadata.json"
+EMBEDDINGS_JSON = VECTOR_DB / "chunks_with_embeddings.json"
+
+# Inspection — test scripts + human-readable logs/reports
+INSPECTION = ROOT / "inspection"
+EVAL_REPORT = INSPECTION / "eval_report.txt"
+INSPECT_TXT = INSPECTION / "inspect.txt"
+HYBRID_REPORT = INSPECTION / "hybrid_search_report.txt"
+RETRIEVAL_CSV = INSPECTION / "retrieval_results.csv"
+DAY4_EVAL_REPORT = INSPECTION / "day4_eval_report.txt"
+
+# OUTPUTS no longer exists as its own folder — hybrid_search.py and
+# day4_eval.py both still import OUTPUTS by name to decide where to write
+# their reports. Aliasing it to INSPECTION keeps both working with zero
+# changes to those files, and their output now correctly lands next to the
+# other reports in inspection/.
+OUTPUTS = INSPECTION
 
 NOTEBOOKS = ROOT / "notebooks"

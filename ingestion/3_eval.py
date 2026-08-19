@@ -33,9 +33,9 @@ try:
 except Exception:
     pass
 
-CHUNKS = "data/processed/acg_chunks.json"
-GOLD = "gold_questions.json"
-REPORT = "data/processed/eval_report.txt"
+CHUNKS = "../data/processed/acg_chunks.json"
+GOLD = "../data/processed/gold_questions.json"
+REPORT = "../inspection/eval_report.txt"
 KS = (1, 3, 5, 10)
 
 STOP = set("""a an and are as at be by for from has have how in is it its of on or that the
