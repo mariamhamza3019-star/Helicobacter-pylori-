@@ -21,6 +21,7 @@ class GenerationResponse(BaseModel):
     recommendation: str
     citations: list[Citation] = Field(default_factory=list)
     refusal_reason: str | None = None
+    suggested_followups: list[str] = Field(default_factory=list)
 
     @field_validator("citations")
     @classmethod
@@ -39,6 +40,14 @@ class GenerationResponse(BaseModel):
         if status == "answered" and v is not None:
             raise ValueError("refusal_reason must be null when answer_status is answered")
         return v
+
+    @field_validator("suggested_followups")
+    @classmethod
+    def followups_empty_on_refusal(cls, v: list[str], info) -> list[str]:
+        status = info.data.get("answer_status")
+        if status == "insufficient_context" and v:
+            raise ValueError("suggested_followups must be empty when answer_status is insufficient_context")
+        return v[:3]
 
 
 # OpenAI Structured Outputs schema (strict mode: all fields required, no extras).
@@ -66,8 +75,13 @@ RESPONSE_JSON_SCHEMA: dict = {
             },
         },
         "refusal_reason": {"type": ["string", "null"]},
+        "suggested_followups": {
+            "type": "array",
+            "items": {"type": "string"},
+            "maxItems": 3,
+        },
     },
-    "required": ["answer_status", "recommendation", "citations", "refusal_reason"],
+    "required": ["answer_status", "recommendation", "citations", "refusal_reason", "suggested_followups"],
     "additionalProperties": False,
 }
 

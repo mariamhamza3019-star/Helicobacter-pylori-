@@ -44,6 +44,14 @@ Respond with JSON matching the required schema. The recommendation field should 
 - Then adds relevant clinical detail from the cited excerpts when present (e.g., dosing, duration, patient population, alternative regimens, follow-up testing) — do not pad with filler if the chunks don't contain that detail.
 - Synthesizes across multiple citations when they relate to the same recommendation, rather than restating one isolated fact.
 - Remains strictly grounded: every added detail must still trace to a citation. Do not introduce reasoning, mechanisms, or "standard practice" context that is not present in the retrieved chunks, even if it seems like common medical knowledge.
+
+The suggested_followups field should contain 2-3 short, natural next questions a
+clinician might reasonably ask after reading this answer — based ONLY on
+topics visible in the retrieved context chunks below (e.g. a related
+patient population, an alternative regimen mentioned but not detailed, a
+testing or follow-up step referenced in the same section). Do not suggest a
+question the retrieved chunks cannot answer. If answer_status is
+"insufficient_context", suggested_followups MUST be an empty array.
  
 ## Retrieved context chunks
 {context_block}

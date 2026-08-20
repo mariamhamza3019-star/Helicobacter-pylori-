@@ -79,13 +79,31 @@ export const PipelineTrace: React.FC<PipelineTraceProps> = ({ response }) => {
 
           <div className="trace-row">
             <span className="trace-label">Tone guardrail</span>
-            <span className="trace-value" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: toneWarnings.length ? '#D97706' : '#2E7D32' }}>
-              {toneWarnings.length ? <ShieldAlert size={14} /> : <ShieldCheck size={14} />}
-              {toneWarnings.length ? `${toneWarnings.length} flagged phrase(s)` : 'Passed — no directive language detected'}
+            <span
+              className="trace-value"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                color: !gatePassed ? '#6B7280' : toneWarnings.length ? '#D97706' : '#2E7D32',
+              }}
+            >
+              {!gatePassed ? (
+                <ShieldCheck size={14} color="#6B7280" />
+              ) : toneWarnings.length ? (
+                <ShieldAlert size={14} />
+              ) : (
+                <ShieldCheck size={14} />
+              )}
+              {!gatePassed
+                ? 'N/A — Query refused'
+                : toneWarnings.length
+                ? `${toneWarnings.length} flagged phrase(s)`
+                : 'Passed — no directive language detected'}
             </span>
           </div>
 
-          {toneWarnings.length > 0 && (
+          {gatePassed && toneWarnings.length > 0 && (
             <div className="trace-warning-list">
               {toneWarnings.map((w, i) => (
                 <div key={i}>{w}</div>

@@ -20,6 +20,7 @@ from generate import (
     DEFAULT_RELEVANCE_THRESHOLD,
     build_refusal_response,
     generate_answer,
+    low_relevance_reason,
     should_refuse_low_relevance,
 )
 from hybrid_search import (
@@ -41,6 +42,42 @@ CHUNK_SCHEMA_KEYS = (
     "source",
     "topic",
 )
+
+# --- Colloquial → guideline-terminology query normalization ---------------
+# The indexed guideline text uses clinical terms ("eradicate",
+# "eradication therapy") that never appear in everyday phrasing like "kill"
+# or "get rid of". Both BM25 and the dense/rerank stages score noticeably
+# worse against that vocabulary gap, which can push an otherwise in-scope
+# question below the relevance threshold. This maps common colloquial
+# phrasing to guideline terminology BEFORE retrieval only -- the original
+# `query` is still what's shown to the user and sent to the LLM/citations,
+# so answer phrasing and citation grounding are unaffected.
+_QUERY_SYNONYMS = [
+    (r"\bkill(ing)?\b", "eradicate"),
+    (r"\bget rid of\b", "eradicate"),
+    (r"\bwipe out\b", "eradicate"),
+    (r"\bcure\b", "eradication treatment for"),
+]
+
+
+def normalize_clinical_query(query: str) -> str:
+    """Retrieval-only query rewrite: colloquial phrasing -> guideline terms,
+    and topic-anchoring for fragments that never name H. pylori at all
+    (e.g. "how to kill" alone). Never changes what's shown to the user or
+    sent to the LLM as "the question" -- only what's passed to the
+    retriever."""
+    normalized = query
+    for pattern, replacement in _QUERY_SYNONYMS:
+        normalized = re.sub(pattern, replacement, normalized, flags=re.IGNORECASE)
+
+    # Single-guideline corpus: if the (already-synonym-mapped) query never
+    # mentions the topic at all, anchor it explicitly rather than relying
+    # on the retriever to guess the implied subject from a bare fragment
+    # like "how to eradicate" with nothing to eradicate named.
+    if not re.search(r"h\.?\s*pylori|helicobacter", normalized, re.IGNORECASE):
+        normalized = f"{normalized.strip()} Helicobacter pylori"
+
+    return normalized
  
  
 class DenseRetriever:
@@ -260,6 +297,7 @@ def generation_to_structured(generated: dict, chunks: list[dict]) -> dict:
         "confidence": confidence,
         "answer_status": generated.get("answer_status", "answered"),
         "refusal_reason": generated.get("refusal_reason"),
+        "suggested_followups": generated.get("suggested_followups", []),
         "_meta": generated.get("_meta", {}),
     }
  
@@ -333,6 +371,56 @@ def extractive_structured_response(
     }
  
  
+_CRISIS_PATTERNS = re.compile(
+    r"\b(kill myself|suicide|suicidal|end my life|ending my life|want to die|"
+    r"don'?t want to (live|be alive)|self[- ]harm|hurt myself|harming myself|"
+    r"no reason to live|better off dead)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_crisis_language(query: str) -> bool:
+    """
+    Deterministic, zero-latency check for self-harm / suicide crisis
+    language, run BEFORE retrieval. This does not depend on the LLM
+    correctly recognizing crisis intent every single time — a keyword-level
+    safety net is more reliable for this specific category than trusting
+    model judgment alone, and it never costs a model call.
+    """
+    return bool(_CRISIS_PATTERNS.search(query or ""))
+
+
+def build_crisis_response() -> dict:
+    """
+    Fixed, non-LLM-generated response for detected crisis language. This is
+    a distinct response category from a normal clinical refusal — it is
+    not "insufficient guideline evidence," it is a deliberate safety
+    redirect, and it always includes real crisis resources.
+    """
+    return {
+        "recommendation": (
+            "I'm really sorry you're feeling this way. This tool only covers "
+            "H. pylori clinical guidelines and can't help with what you're going "
+            "through right now, but please reach out for support:\n\n"
+            "- If you are in the US: call or text 988 (Suicide & Crisis Lifeline), available 24/7.\n"
+            "- If you are outside the US: contact your local emergency number or a crisis line "
+            "in your country (findahelpline.com lists options worldwide).\n\n"
+            "You don't have to go through this alone — please talk to someone you trust or a "
+            "crisis service as soon as you can."
+        ),
+        "excerpt": [],
+        "evidence": [],
+        "citation": [],
+        "citations": [],
+        "reranked_documents": [],
+        "confidence": "low",
+        "answer_status": "insufficient_context",
+        "refusal_reason": "This tool provides H. pylori clinical guideline information only and is not equipped to help with a personal crisis.",
+        "suggested_followups": [],
+        "_meta": {"llm_called": False, "crisis_redirect": True},
+    }
+
+
 def _build_retrieval_query(
     query: str,
     history: list[dict] | None,
@@ -375,20 +463,17 @@ def run_clinical_rag(
       recommendation, evidence/excerpt, citations/citation, reranked_documents,
       confidence, answer_status, refusal_reason, _meta.
     """
+    if detect_crisis_language(query):
+        return build_crisis_response()
+
     retrieval_query = _build_retrieval_query(query, history)
+    retrieval_query = normalize_clinical_query(retrieval_query)
     ranked = retrieve_ranked(retriever, retrieval_query, k, all_chunks)
     low = _confidence_label(ranked, relevance_threshold)
  
     if low == "low":
         top = _top_score(ranked)
-        if not ranked:
-            reason = "No chunks were retrieved for this query."
-        elif top is None:
-            reason = "Retrieved chunks lack reranker scores for confidence gating."
-        else:
-            reason = (
-                f"Top rerank score {top:.3f} is below threshold {relevance_threshold:.3f}."
-            )
+        reason = low_relevance_reason(ranked, relevance_threshold)
         if use_llm and generate_fn is not None:
             generated = build_refusal_response(reason)
             generated["_meta"] = {"llm_called": False, "top_score": top}
