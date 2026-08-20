@@ -40,6 +40,7 @@ export interface QueryResponse {
   confidence: 'high' | 'low';
   answer_status: 'answered' | 'insufficient_context' | 'greeting' | 'casual';
   refusal_reason?: string | null;
+  suggested_followups?: string[];
   latency_ms: number;
   pipeline_used: string;
   _meta?: {
