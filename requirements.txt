@@ -1,10 +1,5 @@
 pymupdf
-transformers
-sentence-transformers
 numpy
-scikit-learn
-tqdm
-torch
 faiss-cpu
 pandas
 openai
