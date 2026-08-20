@@ -91,6 +91,7 @@ def _mock_answered_bqt(query: str, chunks: list[dict], **kwargs) -> dict:
             }
         ],
         "refusal_reason": None,
+        "suggested_followups": [],
     }
 
 
@@ -114,6 +115,7 @@ def _mock_answered_carcinogen(query: str, chunks: list[dict], **kwargs) -> dict:
             }
         ],
         "refusal_reason": None,
+        "suggested_followups": [],
     }
 
 
@@ -126,6 +128,7 @@ def _mock_refusal_pregnancy(query: str, chunks: list[dict], **kwargs) -> dict:
         ),
         "citations": [],
         "refusal_reason": "No retrieved chunks address dosing for pregnant patients.",
+        "suggested_followups": [],
     }
 
 
@@ -150,6 +153,7 @@ def _mock_hallucinated_citation(query: str, chunks: list[dict], **kwargs) -> dic
             },
         ],
         "refusal_reason": None,
+        "suggested_followups": [],
     }
 
 

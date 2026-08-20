@@ -1,0 +1,14 @@
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Secrets
+.env
+
+# Hugging Face / ML caches
+.hf_cache/
+.cache/

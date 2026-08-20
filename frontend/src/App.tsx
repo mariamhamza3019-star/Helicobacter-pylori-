@@ -113,10 +113,13 @@ export const App: React.FC = () => {
         <div className="chat-layout">
           <div className="chat-scroll-area" ref={scrollRef}>
             <div className="chat-scroll-inner">
-              {turns.length === 0 && (
+                  {turns.length === 0 && (
                 <div className="chat-empty-state">
-                  Ask a clinical question about H. pylori diagnosis, therapy, or management to get started.
-                  Follow-up questions ("what about in children?") will use the conversation so far.
+                  {(() => {
+                    const hour = new Date().getHours();
+                    const hello = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                    return `${hello}! 👋 I'm your H. pylori information assistant. How can I help you today?`;
+                  })()}
                 </div>
               )}
 
@@ -155,10 +158,16 @@ export const App: React.FC = () => {
 
                   {turn.response && (
                     <>
-                      <RecommendationBox response={turn.response} />
-                      <PipelineTrace response={turn.response} />
-                      <GroundedEvidence citations={turn.response.citations} />
-                      <RerankedDocs documents={turn.response.reranked_documents} />
+                      <RecommendationBox response={turn.response} onSelectFollowup={(q) => setQuery(q)} />
+                      {turn.response.answer_status !== 'greeting' && turn.response.answer_status !== 'casual' && (
+                        <PipelineTrace response={turn.response} />
+                      )}
+                      {turn.response.answer_status === 'answered' && (
+                        <>
+                          <GroundedEvidence citations={turn.response.citations} />
+                          <RerankedDocs documents={turn.response.reranked_documents} />
+                        </>
+                      )}
                     </>
                   )}
                 </div>

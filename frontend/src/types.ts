@@ -38,7 +38,7 @@ export interface QueryResponse {
   citations: Citation[];
   reranked_documents: RerankedDocument[];
   confidence: 'high' | 'low';
-  answer_status: 'answered' | 'insufficient_context';
+  answer_status: 'answered' | 'insufficient_context' | 'greeting' | 'casual';
   refusal_reason?: string | null;
   latency_ms: number;
   pipeline_used: string;
@@ -49,6 +49,11 @@ export interface QueryResponse {
     tone_warnings?: string[];
     reasoning_effort?: string;
     model?: string;
+    skipped_retrieval?: boolean;
+    intent?: string;
+    fallback?: string;
+    generation_failed?: boolean;
+    both_llms_failed?: boolean;
   };
 }
 

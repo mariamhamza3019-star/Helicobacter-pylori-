@@ -1,34 +1,41 @@
 """
 Grounded answer generation for the H. pylori clinical RAG pipeline.
- 
+
 Accepts any list of retrieved chunks matching the retrieval schema (with optional
 ``score`` for relevance gating). Calls openai/gpt-oss-120b with structured JSON
 output, validates schema, and verifies citations against retrieved chunks.
 """
 from __future__ import annotations
- 
+
 import json
+import logging
 import os
 import re
 import time
 import random
 from difflib import SequenceMatcher
 from typing import Any, Callable
- 
+
 import jsonschema
-from openai import OpenAI, RateLimitError, APIConnectionError
+from openai import OpenAI, RateLimitError, APIConnectionError, APITimeoutError
 from pydantic import ValidationError
- 
+
+from env_loader import load_dotenv
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
 DEFAULT_MAX_RETRIES = 2
- 
+
 RATE_LIMIT_MAX_RETRIES = 3
- 
- 
+
+
 def _backoff_sleep(attempt: int) -> None:
     """Exponential backoff with jitter: ~2s, ~4s, ~8s..."""
     delay = (2 ** attempt) + random.uniform(0, 1)
     time.sleep(delay)
- 
+
 from grounding_system_prompt import build_system_prompt
 from schema import (
     RESPONSE_JSON_SCHEMA,
@@ -36,21 +43,21 @@ from schema import (
     response_to_dict,
     validate_response,
 )
- 
+
 DEFAULT_MODEL = "openai/gpt-oss-120b"
 DEFAULT_RELEVANCE_THRESHOLD = 0.35
 DEFAULT_EXCERPT_MIN_RATIO = 0.72
 DEFAULT_MAX_RETRIES = 2
- 
+
 REFUSAL_LOW_RELEVANCE = (
     "No retrieved chunks met the minimum relevance threshold for this query."
 )
- 
- 
+
+
 def _normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().strip())
- 
- 
+
+
 # Sentence-initial imperative clinical verbs ("Take 500mg...", "Start therapy...")
 # and second-person directive phrasing ("you should...") — the model is meant
 # to describe what the guideline states, never instruct the reader to act.
@@ -62,8 +69,8 @@ _DIRECTIVE_PHRASES = re.compile(
     r"\byou should\b|\byou must\b|\byou need to\b|\bi recommend you\b",
     re.IGNORECASE,
 )
- 
- 
+
+
 def check_directive_language(text: str) -> list[str]:
     """
     Non-blocking tone guardrail. Flags phrasing that instructs the reader to
@@ -80,8 +87,8 @@ def check_directive_language(text: str) -> list[str]:
     for match in _DIRECTIVE_PHRASES.finditer(text):
         warnings.append(f"Directive phrase detected: \"{match.group(0)}\"")
     return warnings
- 
- 
+
+
 def _excerpt_matches_chunk(excerpt: str, chunk_text: str, min_ratio: float) -> bool:
     excerpt_norm = _normalize_text(excerpt)
     chunk_norm = _normalize_text(chunk_text)
@@ -91,18 +98,32 @@ def _excerpt_matches_chunk(excerpt: str, chunk_text: str, min_ratio: float) -> b
         return True
     if len(excerpt_norm) >= 20 and excerpt_norm[:20] in chunk_norm:
         return True
-    return SequenceMatcher(None, excerpt_norm, chunk_norm).ratio() >= min_ratio
- 
- 
+
+    # Below this point the excerpt is not a verbatim substring (the model
+    # lightly reworded it) — measure how much of the EXCERPT is covered by
+    # matching material in the chunk, rather than a plain SequenceMatcher
+    # .ratio(), which divides by (len(excerpt) + len(chunk)) combined. That
+    # symmetric ratio unfairly fails a short, legitimately-grounded excerpt
+    # pulled from a much longer chunk — e.g. a 90-char excerpt against a
+    # 600-char chunk scores ~0.10 even when every word of the excerpt
+    # appears in the chunk, because the chunk's extra length dilutes the
+    # ratio. What we actually want to know is "how much of the excerpt
+    # itself is grounded," not "how similar are the two texts overall."
+    matcher = SequenceMatcher(None, excerpt_norm, chunk_norm)
+    total_matched = sum(block.size for block in matcher.get_matching_blocks())
+    coverage = total_matched / len(excerpt_norm)
+    return coverage >= min_ratio
+
+
 def _chunk_lookup(chunks: list[dict]) -> dict[str, dict]:
     return {c["chunk_id"]: c for c in chunks}
- 
- 
+
+
 def _top_relevance_score(chunks: list[dict]) -> float | None:
     scores = [c["score"] for c in chunks if c.get("score") is not None]
     return max(scores) if scores else None
- 
- 
+
+
 def should_refuse_low_relevance(
     chunks: list[dict],
     threshold: float = DEFAULT_RELEVANCE_THRESHOLD,
@@ -114,8 +135,8 @@ def should_refuse_low_relevance(
     if top_score is None:
         return False
     return top_score < threshold
- 
- 
+
+
 def build_refusal_response(reason: str) -> dict:
     response = GenerationResponse(
         answer_status="insufficient_context",
@@ -127,8 +148,8 @@ def build_refusal_response(reason: str) -> dict:
         refusal_reason=reason,
     )
     return response_to_dict(response)
- 
- 
+
+
 def assemble_messages(
     query: str,
     chunks: list[dict],
@@ -143,12 +164,12 @@ def assemble_messages(
                 messages.append({"role": role, "content": content})
     messages.append({"role": "user", "content": query})
     return messages
- 
- 
+
+
 def validate_schema_raw(data: dict) -> None:
     jsonschema.validate(instance=data, schema=RESPONSE_JSON_SCHEMA)
- 
- 
+
+
 def verify_citations(
     response: GenerationResponse,
     chunks: list[dict],
@@ -161,34 +182,36 @@ def verify_citations(
     """
     if response.answer_status != "answered":
         return response, []
- 
+
     lookup = _chunk_lookup(chunks)
     kept: list = []
     warnings: list[str] = []
- 
+
     for cite in response.citations:
         chunk = lookup.get(cite.chunk_id)
         if chunk is None:
             warnings.append(f"Stripped citation with unknown chunk_id: {cite.chunk_id}")
             continue
         if not _excerpt_matches_chunk(cite.excerpt, chunk.get("text", ""), excerpt_min_ratio):
+            preview = cite.excerpt[:160] + ("..." if len(cite.excerpt) > 160 else "")
             warnings.append(
-                f"Stripped citation {cite.chunk_id}: excerpt not grounded in chunk text"
+                f"Stripped citation {cite.chunk_id}: excerpt not grounded in chunk text "
+                f"— model excerpt was: \"{preview}\""
             )
             continue
         kept.append(cite)
- 
+
     cleaned = response.model_copy(update={"citations": kept})
     return cleaned, warnings
- 
- 
+
+
 def _parse_model_content(content: str) -> dict:
     try:
         return json.loads(content)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Model returned non-JSON content: {exc}") from exc
- 
- 
+
+
 def call_model(
     query: str,
     chunks: list[dict],
@@ -200,10 +223,11 @@ def call_model(
     api_client = client or OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY") or os.environ.get("GENERATION_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL"),
+        timeout=45.0,
     )
     model_name = model or os.environ.get("GENERATION_MODEL", DEFAULT_MODEL)
     messages = assemble_messages(query, chunks, history=history)
- 
+
     completion = api_client.chat.completions.create(
         model=model_name,
         messages=messages,
@@ -222,8 +246,8 @@ def call_model(
     if not content:
         raise ValueError("Model returned empty content")
     return _parse_model_content(content)
- 
- 
+
+
 def generate_answer(
     query: str,
     retrieved_chunks: list[dict],
@@ -235,6 +259,8 @@ def generate_answer(
     model: str | None = None,
     call_model_fn: Callable[..., dict] | None = None,
     history: list[dict] | None = None,
+    allow_fallback: bool = True,
+    fallback_model_fn: Callable[..., dict] | None = None,
 ) -> dict:
     """
     Generate a grounded answer from retrieved chunks.
@@ -283,6 +309,16 @@ def generate_answer(
             metadata["citation_warnings"] = warnings
  
             if response.answer_status == "answered" and not response.citations:
+                # Verification stripped every citation the model produced.
+                # Give it another attempt (same budget as malformed-JSON
+                # retries) before refusing outright — a single imperfect
+                # excerpt shouldn't sink an otherwise well-grounded answer.
+                if attempt < max_retries:
+                    last_error = ValueError(
+                        "All citations failed grounding verification; retrying."
+                    )
+                    continue
+                metadata["citations_unusable"] = True
                 if warnings:
                     response = GenerationResponse(
                         answer_status="insufficient_context",
@@ -313,6 +349,20 @@ def generate_answer(
             metadata["reasoning_effort"] = "low"
             metadata["model"] = model or os.environ.get("GENERATION_MODEL", DEFAULT_MODEL)
             result["_meta"] = metadata
+
+            if metadata.get("citations_unusable"):
+                fallback = _maybe_gemini_fallback(
+                    query,
+                    retrieved_chunks,
+                    excerpt_min_ratio=excerpt_min_ratio,
+                    max_retries=max_retries,
+                    history=history,
+                    allow_fallback=allow_fallback,
+                    call_model_fn=call_model_fn,
+                    fallback_model_fn=fallback_model_fn,
+                )
+                if fallback is not None:
+                    return fallback
             return result
  
         except RateLimitError as exc:
@@ -337,25 +387,155 @@ def generate_answer(
                 continue
             break
  
+        except (APITimeoutError, TimeoutError) as exc:
+            last_error = exc
+            logger.warning("Primary LLM timed out (%s)", type(exc).__name__)
+            rate_limit_attempts += 1
+            if rate_limit_attempts <= RATE_LIMIT_MAX_RETRIES:
+                time.sleep(1.5)
+                continue
+            break
+
         except (ValidationError, jsonschema.ValidationError, ValueError) as exc:
             last_error = exc
             if attempt >= max_retries:
                 break
- 
-    # Every retry path exhausted — fail SAFE instead of raising, so the
-    # FastAPI endpoint returns a normal refusal response (200) instead of
-    # crashing with a 500 mid-demo.
-    if isinstance(last_error, RateLimitError):
-        reason = (
+
+        except Exception as exc:
+            last_error = exc
+            logger.warning("Primary LLM failed (%s)", type(exc).__name__)
+            break
+
+    metadata["generation_failed"] = True
+    metadata["primary_error"] = type(last_error).__name__ if last_error else "unknown"
+    fallback = _maybe_gemini_fallback(
+        query,
+        retrieved_chunks,
+        excerpt_min_ratio=excerpt_min_ratio,
+        max_retries=max_retries,
+        history=history,
+        allow_fallback=allow_fallback,
+        call_model_fn=call_model_fn,
+        fallback_model_fn=fallback_model_fn,
+    )
+    if fallback is not None:
+        return fallback
+
+    from gemini_fallback import gemini_configured
+
+    if allow_fallback and fallback_model_fn is not None:
+        return both_llms_failed_response()
+    if allow_fallback and call_model_fn is None and gemini_configured():
+        return both_llms_failed_response()
+
+    result = build_refusal_response(_user_safe_generation_error(last_error))
+    result["_meta"] = metadata
+    return result
+
+
+def _user_safe_generation_error(exc: Exception | None) -> str:
+    if isinstance(exc, RateLimitError):
+        return (
             "The system is temporarily busy (rate limit reached). "
             "Please wait a few seconds and try again."
         )
-    elif isinstance(last_error, APIConnectionError):
-        reason = "Could not reach the language model service. Please try again."
-    else:
-        reason = f"Generation failed after retries: {last_error}"
- 
-    result = build_refusal_response(reason)
-    result["_meta"] = metadata
+    if isinstance(exc, (APIConnectionError, APITimeoutError, TimeoutError, ConnectionError)):
+        return "Could not reach the language model service. Please try again."
+    return "The language model could not produce a grounded answer from the retrieved evidence."
+
+
+def _is_grounded_success(result: dict) -> bool:
+    return result.get("answer_status") == "answered" and bool(result.get("citations"))
+
+
+def _is_evidence_refusal(result: dict) -> bool:
+    """True when the model (or gate) refused because evidence was insufficient — not an LLM crash."""
+    if result.get("answer_status") != "insufficient_context":
+        return False
+    meta = result.get("_meta") or {}
+    if meta.get("generation_failed"):
+        return False
+    return True
+
+
+def _maybe_gemini_fallback(
+    query: str,
+    retrieved_chunks: list[dict],
+    *,
+    excerpt_min_ratio: float,
+    max_retries: int,
+    history: list[dict] | None,
+    allow_fallback: bool,
+    call_model_fn: Callable[..., dict] | None,
+    fallback_model_fn: Callable[..., dict] | None,
+) -> dict | None:
+    if not allow_fallback:
+        return None
+    # Injected primary mocks in tests should not hit live Gemini unless a
+    # fallback_model_fn is provided explicitly.
+    if call_model_fn is not None and fallback_model_fn is None:
+        return None
+    return _try_gemini_fallback(
+        query,
+        retrieved_chunks,
+        excerpt_min_ratio=excerpt_min_ratio,
+        max_retries=max_retries,
+        history=history,
+        fallback_model_fn=fallback_model_fn,
+    )
+
+
+def _try_gemini_fallback(
+    query: str,
+    retrieved_chunks: list[dict],
+    *,
+    excerpt_min_ratio: float,
+    max_retries: int,
+    history: list[dict] | None,
+    fallback_model_fn: Callable[..., dict] | None,
+) -> dict | None:
+    caller = fallback_model_fn
+    if caller is None:
+        from gemini_fallback import call_gemini_model, gemini_configured
+
+        if not gemini_configured():
+            return None
+        caller = call_gemini_model
+
+    logger.warning("Primary LLM unusable; trying Gemini fallback")
+    try:
+        result = generate_answer(
+            query,
+            retrieved_chunks,
+            excerpt_min_ratio=excerpt_min_ratio,
+            max_retries=max_retries,
+            call_model_fn=caller,
+            history=history,
+            allow_fallback=False,
+        )
+    except Exception as exc:
+        logger.warning("Gemini fallback failed (%s)", type(exc).__name__)
+        return None
+
+    meta = result.setdefault("_meta", {})
+    meta["fallback"] = "gemini"
+    meta["model"] = os.environ.get("GEMINI_MODEL") or meta.get("model") or "gemini-3.5-flash-lite"
+    if _is_grounded_success(result) or _is_evidence_refusal(result):
+        meta["generation_failed"] = False
+        return result
+    logger.warning("Gemini fallback returned an unusable response")
+    return None
+
+
+def both_llms_failed_response() -> dict:
+    result = build_refusal_response(
+        "I couldn't generate an answer right now. Please try again in a moment."
+    )
+    result["_meta"] = {
+        "citation_warnings": [],
+        "llm_called": True,
+        "generation_failed": True,
+        "fallback": "gemini",
+        "both_llms_failed": True,
+    }
     return result
- 
