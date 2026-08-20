@@ -15,9 +15,11 @@ if a chunking change drops this score, the change made retrieval worse.
 
 Metrics
 -------
-  section recall@k : did any of the top-k chunks come from a section that
-                     actually contains the answer?
-  MRR              : 1 / rank of the first correct chunk, averaged.
+  section recall@k    : did any of the top-k chunks come from a section that
+                        actually contains the answer?
+  section precision@k : what proportion of the top-k retrieved chunks came
+                        from a section that actually contains the answer?
+  MRR                 : 1 / rank of the first correct chunk, averaged.
 
 Run:  python 3_eval.py
 """
@@ -60,8 +62,10 @@ class BM25:
         for d in self.docs:
             for w in set(d):
                 df[w] += 1
-        self.idf = {w: math.log(1 + (self.N - n + 0.5) / (n + 0.5))
-                    for w, n in df.items()}
+        self.idf = {
+            w: math.log(1 + (self.N - n + 0.5) / (n + 0.5))
+            for w, n in df.items()
+        }
 
     def search(self, query, k=10):
         q = tok(query)
@@ -73,8 +77,12 @@ class BM25:
                 f = tf.get(w)
                 if not f:
                     continue
-                s += (self.idf.get(w, 0.0) * f * (self.k1 + 1)
-                      / (f + self.k1 * (1 - self.b + self.b * dl / self.avgdl)))
+                s += (
+                    self.idf.get(w, 0.0)
+                    * f
+                    * (self.k1 + 1)
+                    / (f + self.k1 * (1 - self.b + self.b * dl / self.avgdl))
+                )
             scores.append((s, i))
         scores.sort(reverse=True)
         return [i for s, i in scores[:k] if s > 0]
@@ -83,66 +91,154 @@ class BM25:
 def main():
     if not os.path.exists(CHUNKS):
         sys.exit(f"{CHUNKS} not found — run 2_parse_chunk.py first.")
+
     chunks = json.load(open(CHUNKS, encoding="utf-8"))
     gold = json.load(open(GOLD, encoding="utf-8"))["questions"]
 
-    # index the same text a retriever would see: section context + body
-    corpus = [f"{c.get('section','')} {c.get('subsection','')} {c['text']}"
-              for c in chunks]
+    # Index the same text a retriever would see: section context + body
+    corpus = [
+        f"{c.get('section', '')} {c.get('subsection', '')} {c['text']}"
+        for c in chunks
+    ]
     bm = BM25(corpus)
 
     maxk = max(KS)
+
+    # Recall@K counts how many questions had at least one relevant
+    # section within the top K retrieved chunks.
     hits = {k: 0 for k in KS}
+
+    # Precision@K accumulates the proportion of relevant retrieved
+    # chunks for each question at each K.
+    precision_totals = {k: 0.0 for k in KS}
+
     rr_total = 0.0
     lines = []
 
     for g in gold:
         want = {s.upper() for s in g["expect_sections"]}
-        top = bm.search(g["q"], k=maxk)
-        got_sections = [chunks[i].get("section", "").upper() for i in top]
 
-        rank = next((r for r, s in enumerate(got_sections, 1) if s in want), None)
+        top = bm.search(g["q"], k=maxk)
+
+        got_sections = [
+            chunks[i].get("section", "").upper()
+            for i in top
+        ]
+
+        # Rank of the first relevant chunk.
+        rank = next(
+            (r for r, s in enumerate(got_sections, 1) if s in want),
+            None
+        )
+
+        # Mean Reciprocal Rank contribution.
         rr_total += 1.0 / rank if rank else 0.0
+
         for k in KS:
+            # -------------------------
+            # Recall@K
+            # -------------------------
             if rank and rank <= k:
                 hits[k] += 1
 
+            # -------------------------
+            # Precision@K
+            # -------------------------
+            retrieved_at_k = got_sections[:k]
+
+            relevant_at_k = sum(
+                1 for section in retrieved_at_k
+                if section in want
+            )
+
+            precision_totals[k] += (
+                relevant_at_k / max(len(retrieved_at_k), 1)
+            )
+
         status = "PASS" if rank and rank <= 5 else "FAIL"
+
         first = chunks[top[0]] if top else None
+
         lines.append(
-            f"[{status}] {g['id']} rank={rank if rank else '-'}  {g['q'][:78]}\n"
-            f"         top1: {(first.get('section','') if first else 'nothing retrieved')[:60]}"
+            f"[{status}] {g['id']} rank={rank if rank else '-'}  "
+            f"{g['q'][:78]}\n"
+            f"         top1: "
+            f"{(first.get('section', '') if first else 'nothing retrieved')[:60]}"
             f" | p{first.get('page_start') if first else '-'}"
             f" | {first.get('chunk_id') if first else '-'}"
         )
 
     n = len(gold)
+
     out = []
+
     out.append("=" * 66)
     out.append("RETRIEVAL EVAL — BM25 lexical baseline (regression detector)")
     out.append("=" * 66)
     out.append(f"chunks indexed : {len(chunks)}")
     out.append(f"questions      : {n}")
     out.append("")
+
     for k in KS:
-        out.append(f"  section recall@{k:<3}: {hits[k]}/{n}  ({100*hits[k]/n:.1f}%)")
-    out.append(f"  MRR             : {rr_total/n:.3f}")
+        # Recall@K
+        out.append(
+            f"  section recall@{k:<3}: "
+            f"{hits[k]}/{n}  "
+            f"({100 * hits[k] / n:.1f}%)"
+        )
+
+        # Precision@K
+        out.append(
+            f"  section precision@{k:<3}: "
+            f"{100 * precision_totals[k] / n:.1f}%"
+        )
+
+    out.append(f"  MRR             : {rr_total / n:.3f}")
+
     out.append("")
     out.append("--- PER QUESTION ---")
     out.extend(lines)
+
     out.append("")
     out.append("Reading this:")
-    out.append("  recall@5 below ~0.75 means chunks are landing in the wrong")
-    out.append("  section or the text is too mangled to match. Look at the FAILs")
-    out.append("  and open those chunks in acg_chunks.json.")
+    out.append(
+        "  recall@5 below ~0.75 means chunks are landing in the wrong"
+    )
+    out.append(
+        "  section or the text is too mangled to match. Look at the FAILs"
+    )
+    out.append(
+        "  and open those chunks in acg_chunks.json."
+    )
+
     out.append("")
-    out.append("  This is BM25, not the shipping retriever. Treat it as a")
-    out.append("  before/after number when changing chunk size, overlap or")
-    out.append("  cleaning rules — not as a quality guarantee.")
+    out.append(
+        "  Precision@K measures how many of the retrieved chunks"
+    )
+    out.append(
+        "  belong to an expected answer section. Low precision means"
+    )
+    out.append(
+        "  retrieval is bringing in more irrelevant sections."
+    )
+
+    out.append("")
+    out.append(
+        "  This is BM25, not the shipping retriever. Treat it as a"
+    )
+    out.append(
+        "  before/after number when changing chunk size, overlap or"
+    )
+    out.append(
+        "  cleaning rules — not as a quality guarantee."
+    )
 
     text = "\n".join(out)
+
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
+
     open(REPORT, "w", encoding="utf-8").write(text)
+
     print(text)
     print(f"\nSaved: {REPORT}")
 

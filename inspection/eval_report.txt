@@ -5,9 +5,13 @@ chunks indexed : 103
 questions      : 30
 
   section recall@1  : 26/30  (86.7%)
+  section precision@1  : 86.7%
   section recall@3  : 30/30  (100.0%)
+  section precision@3  : 68.9%
   section recall@5  : 30/30  (100.0%)
+  section precision@5  : 64.0%
   section recall@10 : 30/30  (100.0%)
+  section precision@10 : 52.0%
   MRR             : 0.933
 
 --- PER QUESTION ---
@@ -76,6 +80,10 @@ Reading this:
   recall@5 below ~0.75 means chunks are landing in the wrong
   section or the text is too mangled to match. Look at the FAILs
   and open those chunks in acg_chunks.json.
+
+  Precision@K measures how many of the retrieved chunks
+  belong to an expected answer section. Low precision means
+  retrieval is bringing in more irrelevant sections.
 
   This is BM25, not the shipping retriever. Treat it as a
   before/after number when changing chunk size, overlap or
