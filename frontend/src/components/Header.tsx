@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({ health, activeTab, setActiveTab 
             <Stethoscope size={24} />
           </div>
           <div className="header-title-block">
-            <h1>H. pylori Clinical Decision Support</h1>
+            <h1>Pylo</h1>
             <p>ACG 2024 Clinical Guideline · Evidence-Grounded Hybrid RAG</p>
           </div>
         </div>
