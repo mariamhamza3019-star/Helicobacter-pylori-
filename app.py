@@ -35,7 +35,7 @@ def _load_resources():
         if not os.path.exists(INDEX_PATH):
             raise RuntimeError(
                 f"FAISS index not found at {INDEX_PATH}. "
-                "Make sure outputs/h_pylori_faiss.index is committed to the repo "
+                "Make sure vectorDB/h_pylori_faiss.index is committed to the repo "
                 "(or generated as part of the build)."
             )
         _index = faiss.read_index(INDEX_PATH)
