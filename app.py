@@ -1,4 +1,3 @@
-p · PY
 """
 FastAPI backend for H. pylori Clinical RAG Pipeline.
  
