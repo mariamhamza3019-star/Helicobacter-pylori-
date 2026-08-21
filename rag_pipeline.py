@@ -20,7 +20,6 @@ from generate import (
     DEFAULT_RELEVANCE_THRESHOLD,
     build_refusal_response,
     generate_answer,
-    low_relevance_reason,
     should_refuse_low_relevance,
 )
 from hybrid_search import (
@@ -42,42 +41,6 @@ CHUNK_SCHEMA_KEYS = (
     "source",
     "topic",
 )
-
-# --- Colloquial → guideline-terminology query normalization ---------------
-# The indexed guideline text uses clinical terms ("eradicate",
-# "eradication therapy") that never appear in everyday phrasing like "kill"
-# or "get rid of". Both BM25 and the dense/rerank stages score noticeably
-# worse against that vocabulary gap, which can push an otherwise in-scope
-# question below the relevance threshold. This maps common colloquial
-# phrasing to guideline terminology BEFORE retrieval only -- the original
-# `query` is still what's shown to the user and sent to the LLM/citations,
-# so answer phrasing and citation grounding are unaffected.
-_QUERY_SYNONYMS = [
-    (r"\bkill(ing)?\b", "eradicate"),
-    (r"\bget rid of\b", "eradicate"),
-    (r"\bwipe out\b", "eradicate"),
-    (r"\bcure\b", "eradication treatment for"),
-]
-
-
-def normalize_clinical_query(query: str) -> str:
-    """Retrieval-only query rewrite: colloquial phrasing -> guideline terms,
-    and topic-anchoring for fragments that never name H. pylori at all
-    (e.g. "how to kill" alone). Never changes what's shown to the user or
-    sent to the LLM as "the question" -- only what's passed to the
-    retriever."""
-    normalized = query
-    for pattern, replacement in _QUERY_SYNONYMS:
-        normalized = re.sub(pattern, replacement, normalized, flags=re.IGNORECASE)
-
-    # Single-guideline corpus: if the (already-synonym-mapped) query never
-    # mentions the topic at all, anchor it explicitly rather than relying
-    # on the retriever to guess the implied subject from a bare fragment
-    # like "how to eradicate" with nothing to eradicate named.
-    if not re.search(r"h\.?\s*pylori|helicobacter", normalized, re.IGNORECASE):
-        normalized = f"{normalized.strip()} Helicobacter pylori"
-
-    return normalized
  
  
 class DenseRetriever:
@@ -371,14 +334,93 @@ def extractive_structured_response(
     }
  
  
+def _build_retrieval_query(
+    query: str,
+    history: list[dict] | None,
+    max_context_turns: int = 2,
+) -> str:
+    """
+    Cheap, zero-latency-cost context expansion for retrieval ONLY (never shown
+    to the user, never sent to generation as "the question"). Concatenates the
+    most recent user turn(s) with the current query so BM25/dense retrieval
+    has enough keywords to find the right chunks for short follow-ups like
+    "what about in children?" — without an extra LLM call to rewrite it.
+    """
+    if not history:
+        return query
+    recent_user_turns = [
+        (turn.get("content") or "").strip()
+        for turn in history
+        if turn.get("role") == "user" and (turn.get("content") or "").strip()
+    ][-max_context_turns:]
+    if not recent_user_turns:
+        return query
+    return " ".join(recent_user_turns) + " " + query
+ 
+ 
 _CRISIS_PATTERNS = re.compile(
     r"\b(kill myself|suicide|suicidal|end my life|ending my life|want to die|"
     r"don'?t want to (live|be alive)|self[- ]harm|hurt myself|harming myself|"
     r"no reason to live|better off dead)\b",
     re.IGNORECASE,
 )
-
-
+ 
+ 
+_GREETING_WORD = r"(?:hi+|hello+|hey+|hiya|yo)"
+_HOW_ARE_YOU = r"(?:how'?s?\s*(?:is|are)?\s*(?:it going|things going|you doing|u doing|you|u)?)"
+_SMALL_TALK_OTHER = {
+    "whats up", "what's up", "good morning", "good afternoon", "good evening",
+    "thanks", "thank you", "ok thanks", "okay thanks", "thanks a lot",
+    "bye", "goodbye", "who are you", "what can you do", "what do you do",
+    "test", "testing",
+}
+_SMALL_TALK_COMBO = re.compile(
+    rf"^(?:{_GREETING_WORD})?\s*,?\s*(?:{_HOW_ARE_YOU})?\s*[!.?]*$"
+)
+ 
+ 
+def detect_small_talk(query: str) -> bool:
+    """
+    Deterministic check for conversational openers/small talk, run BEFORE
+    retrieval — same reasoning as the crisis check: don't send "hi, how are
+    you" through the clinical relevance gate, since it will legitimately
+    score low and come back as a confusing refusal for a friendly greeting.
+    Matches greetings alone, combined with "how are you" variants, and a
+    short list of other common openers/closers.
+    """
+    normalized = re.sub(r"[^\w\s']", "", (query or "").strip().lower())
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    if not normalized:
+        return False
+    if normalized in _SMALL_TALK_OTHER:
+        return True
+    return bool(_SMALL_TALK_COMBO.fullmatch(normalized))
+ 
+ 
+def build_small_talk_response() -> dict:
+    return {
+        "recommendation": (
+            "Hi! I'm Pylo, your H. pylori clinical guideline assistant. Ask me about "
+            "diagnosis, first-line or salvage therapy, treatment-experienced patients, "
+            "or post-treatment testing, and I'll answer using the ACG 2024 guideline "
+            "with citations."
+        ),
+        "excerpt": [],
+        "evidence": [],
+        "citation": [],
+        "citations": [],
+        "reranked_documents": [],
+        "confidence": "high",
+        "answer_status": "answered",
+        "refusal_reason": None,
+        "suggested_followups": [
+            "What is the preferred first-line therapy for treatment-naive patients?",
+            "How many days should bismuth quadruple therapy be given for?",
+        ],
+        "_meta": {"llm_called": False, "small_talk": True},
+    }
+ 
+ 
 def detect_crisis_language(query: str) -> bool:
     """
     Deterministic, zero-latency check for self-harm / suicide crisis
@@ -388,8 +430,8 @@ def detect_crisis_language(query: str) -> bool:
     model judgment alone, and it never costs a model call.
     """
     return bool(_CRISIS_PATTERNS.search(query or ""))
-
-
+ 
+ 
 def build_crisis_response() -> dict:
     """
     Fixed, non-LLM-generated response for detected crisis language. This is
@@ -419,30 +461,6 @@ def build_crisis_response() -> dict:
         "suggested_followups": [],
         "_meta": {"llm_called": False, "crisis_redirect": True},
     }
-
-
-def _build_retrieval_query(
-    query: str,
-    history: list[dict] | None,
-    max_context_turns: int = 2,
-) -> str:
-    """
-    Cheap, zero-latency-cost context expansion for retrieval ONLY (never shown
-    to the user, never sent to generation as "the question"). Concatenates the
-    most recent user turn(s) with the current query so BM25/dense retrieval
-    has enough keywords to find the right chunks for short follow-ups like
-    "what about in children?" — without an extra LLM call to rewrite it.
-    """
-    if not history:
-        return query
-    recent_user_turns = [
-        (turn.get("content") or "").strip()
-        for turn in history
-        if turn.get("role") == "user" and (turn.get("content") or "").strip()
-    ][-max_context_turns:]
-    if not recent_user_turns:
-        return query
-    return " ".join(recent_user_turns) + " " + query
  
  
 def run_clinical_rag(
@@ -465,15 +483,24 @@ def run_clinical_rag(
     """
     if detect_crisis_language(query):
         return build_crisis_response()
-
+ 
+    if detect_small_talk(query):
+        return build_small_talk_response()
+ 
     retrieval_query = _build_retrieval_query(query, history)
-    retrieval_query = normalize_clinical_query(retrieval_query)
     ranked = retrieve_ranked(retriever, retrieval_query, k, all_chunks)
     low = _confidence_label(ranked, relevance_threshold)
  
     if low == "low":
         top = _top_score(ranked)
-        reason = low_relevance_reason(ranked, relevance_threshold)
+        if not ranked:
+            reason = "No chunks were retrieved for this query."
+        elif top is None:
+            reason = "Retrieved chunks lack reranker scores for confidence gating."
+        else:
+            reason = (
+                f"Top rerank score {top:.3f} is below threshold {relevance_threshold:.3f}."
+            )
         if use_llm and generate_fn is not None:
             generated = build_refusal_response(reason)
             generated["_meta"] = {"llm_called": False, "top_score": top}
@@ -488,6 +515,11 @@ def run_clinical_rag(
             pass
  
     return extractive_structured_response(ranked, low_confidence=False)
+ 
+ 
+def ordering_changed(dense_indices: list[int], rerank_indices: list[int]) -> bool:
+    """True when reranking changed rank order (not just relabeled scores)."""
+    return dense_indices != rerank_indices
  
  
 def ordering_changed(dense_indices: list[int], rerank_indices: list[int]) -> bool:
